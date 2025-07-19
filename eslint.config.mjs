@@ -1,16 +1,50 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig } from 'eslint/config'
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import nextPlugin from '@next/eslint-plugin-next'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default defineConfig([
+  {
+    ignores: ['node_modules', '.next', 'dist'],
+  },
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+  // ⚙️ Para arquivos de configuração como eslint.config.mjs
+  {
+    files: ['eslint.config.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        process: 'readonly',
+        __dirname: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+      },
+    },
+  },
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
 
-export default eslintConfig;
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: process.cwd(),
+      },
+    },
+    plugins: {
+      '@next/next': nextPlugin,
+      'jsx-a11y': jsxA11y,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...jsxA11y.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-console': 'warn',
+    },
+  },
+])
