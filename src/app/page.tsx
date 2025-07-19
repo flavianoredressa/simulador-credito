@@ -5,15 +5,18 @@ import { APP_CONFIG } from "@/constants/loan";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="max-w-4xl mx-auto text-center">
         <Card variant="elevated" className="p-8 md:p-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
             Simule seu
-            <span className="text-blue-600"> Empréstimo</span>
+            <span className="text-blue-600 dark:text-blue-400">
+              {" "}
+              Empréstimo
+            </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             {APP_CONFIG.description}. Calcule parcelas, juros e encontre a opção
             ideal para você.
           </p>
@@ -22,16 +25,18 @@ export default function Home() {
             {APP_CONFIG.features.map((feature, index) => (
               <Card
                 key={index}
-                className="bg-gradient-to-br from-white to-gray-50 p-6"
+                className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-700 dark:to-gray-800 p-6 transition-colors duration-300"
               >
                 <CardContent className="p-0">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <span className="text-white text-xl">{feature.icon}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {feature.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -44,7 +49,7 @@ export default function Home() {
               </Button>
             </Link>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Gratuito • Sem compromisso • Resultado imediato
             </p>
           </div>
