@@ -1,4 +1,9 @@
 import type { LoanData, LoanCalculation } from "@/types/loan";
+import {
+  getAgeFromBirthDate,
+  getInterestRateByAge,
+  convertAnnualToMonthlyRate,
+} from "@/lib/utils";
 
 /**
  * Calcula o valor total do empréstimo com juros compostos
@@ -94,5 +99,48 @@ export const calculateSAC = (loanData: LoanData): LoanCalculation => {
     installmentAmount,
     totalInterest,
     interestPercentage,
+  };
+};
+
+/**
+ * Calcula empréstimo usando a fórmula PMT com taxa baseada na idade
+ * PMT = PV * [r * (1 + r)^n] / [(1 + r)^n - 1]
+ * Onde: PMT = Pagamento mensal, PV = Valor presente, r = Taxa mensal, n = Número de pagamentos
+ */
+export const calculateLoanWithAge = (
+  amount: number,
+  installments: number,
+  birthDate: string
+): LoanCalculation & { age?: number; annualInterestRate?: number } => {
+  // Calcula idade e determina taxa de juros
+  const age = getAgeFromBirthDate(birthDate);
+  const annualRate = getInterestRateByAge(age);
+  const monthlyRate = convertAnnualToMonthlyRate(annualRate) / 100; // Converte para decimal
+
+  // Fórmula PMT: PV * [r * (1 + r)^n] / [(1 + r)^n - 1]
+  let installmentAmount: number;
+
+  if (monthlyRate === 0) {
+    // Se taxa for 0, parcela é simplesmente o valor dividido pelo número de parcelas
+    installmentAmount = amount / installments;
+  } else {
+    const factor = Math.pow(1 + monthlyRate, installments);
+    installmentAmount = (amount * (monthlyRate * factor)) / (factor - 1);
+  }
+
+  const totalAmount = installmentAmount * installments;
+  const totalInterest = totalAmount - amount;
+  const interestPercentage = (totalInterest / amount) * 100;
+
+  return {
+    amount,
+    installments,
+    interestRate: convertAnnualToMonthlyRate(annualRate), // Taxa mensal para compatibilidade
+    totalAmount,
+    installmentAmount,
+    totalInterest,
+    interestPercentage,
+    age,
+    annualInterestRate: annualRate,
   };
 };
