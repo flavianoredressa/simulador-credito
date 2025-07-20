@@ -1,9 +1,36 @@
 import type { LoanData, LoanCalculation } from "@/types/loan";
-import {
-  getAgeFromBirthDate,
-  getInterestRateByAge,
-  convertAnnualToMonthlyRate,
-} from "@/lib/utils";
+
+// Função para calcular idade
+function getAgeFromBirthDate(birthDate: string): number {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age;
+}
+
+// Função para determinar taxa de juros por idade
+function getInterestRateByAge(age: number): number {
+  if (age <= 25) {
+    return 5; // 5% ao ano
+  } else if (age >= 26 && age <= 40) {
+    return 3; // 3% ao ano
+  } else if (age >= 41 && age <= 60) {
+    return 2; // 2% ao ano
+  } else {
+    return 4; // 4% ao ano (acima de 60 anos)
+  }
+}
+
+// Função para converter taxa anual para mensal
+function convertAnnualToMonthlyRate(annualRate: number): number {
+  return annualRate / 12;
+}
 
 /**
  * Calcula o valor total do empréstimo com juros compostos
