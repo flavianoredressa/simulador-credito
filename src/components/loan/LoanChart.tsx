@@ -123,11 +123,11 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
     return `${month}º mês`;
   };
 
-  // Formatador para taxa de juros mensal
+  // Formatador para taxa de juros anual
   const formatInterestRate = (monthlyRate: number) => {
-    // Converte taxa decimal mensal para percentual e formata
-    const percentageRate = monthlyRate * 100;
-    return `${percentageRate.toFixed(2)}%`;
+    // Converte taxa mensal de volta para anual e formata
+    const annualRate = monthlyRate * 12;
+    return `${annualRate.toFixed(2)}%`;
   };
 
   // Componente personalizado para tooltip do gráfico de composição
@@ -429,7 +429,7 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
                 Taxa de Juros
               </h4>
               <p className="text-2xl font-bold text-blue-900">
-                {formatInterestRate(loanData.interestRate)} a.m.
+                {formatInterestRate(loanData.interestRate)} a.a.
               </p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
