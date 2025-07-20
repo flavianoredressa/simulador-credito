@@ -1,9 +1,5 @@
 import { InputHTMLAttributes, forwardRef, useId } from "react";
-
-// Utility function to combine classes
-const cn = (...classes: (string | undefined | null | false)[]): string => {
-  return classes.filter(Boolean).join(" ");
-};
+import { cn } from "../../lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;

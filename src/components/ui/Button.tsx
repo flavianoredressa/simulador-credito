@@ -1,9 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
-
-// Utility function to combine classes
-const cn = (...classes: (string | undefined | null | false)[]): string => {
-  return classes.filter(Boolean).join(" ");
-};
+import { cn } from "../../lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";

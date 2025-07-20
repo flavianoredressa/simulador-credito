@@ -23,11 +23,7 @@ import {
   CardTitle,
 } from "../ui/Card";
 import { LoanCalculation } from "@/types/loan";
-
-// Utility function to combine classes
-const cn = (...classes: (string | undefined | null | false)[]): string => {
-  return classes.filter(Boolean).join(" ");
-};
+import { cn } from "../../lib/utils";
 
 interface LoanChartProps {
   loanData: LoanCalculation;
