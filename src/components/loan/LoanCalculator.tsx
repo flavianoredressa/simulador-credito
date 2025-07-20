@@ -14,7 +14,7 @@ import {
 import type { LoanCalculation } from "@/types/loan";
 
 // Função para calcular idade
-function calculateAge(birthDate: string): number {
+export function calculateAge(birthDate: string): number {
   const today = new Date();
   const birth = new Date(birthDate);
 
@@ -29,7 +29,7 @@ function calculateAge(birthDate: string): number {
 }
 
 // Função para determinar taxa de juros por idade
-function getInterestRateByAge(age: number): number {
+export function getInterestRateByAge(age: number): number {
   if (age <= 25) {
     return 5; // 5% ao ano
   } else if (age >= 26 && age <= 40) {
@@ -42,7 +42,7 @@ function getInterestRateByAge(age: number): number {
 }
 
 // Função PMT para cálculo de empréstimo
-function calculatePMT(
+export function calculatePMT(
   principal: number,
   annualRate: number,
   periods: number
