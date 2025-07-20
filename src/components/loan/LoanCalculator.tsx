@@ -130,7 +130,7 @@ export function LoanCalculator() {
         <FadeIn delay={0.6} className="w-full">
           <StaggerContainer staggerDelay={0.2}>
             <StaggerChild>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Análise Visual dos Pagamentos
               </h2>
             </StaggerChild>

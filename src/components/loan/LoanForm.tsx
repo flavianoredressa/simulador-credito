@@ -131,28 +131,26 @@ export function LoanForm({ onCalculate }: LoanFormProps) {
         />
 
         {age !== null && interestRate !== null && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-900 mb-2">
               Informações Calculadas
             </h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-blue-700 dark:text-blue-300">Idade:</span>
-                <span className="ml-2 font-medium text-blue-900 dark:text-blue-100">
+                <span className="text-blue-700">Idade:</span>
+                <span className="ml-2 font-medium text-blue-900 ">
                   {age} anos
                 </span>
               </div>
               <div>
-                <span className="text-blue-700 dark:text-blue-300">
-                  Taxa de Juros:
-                </span>
-                <span className="ml-2 font-medium text-blue-900 dark:text-blue-100">
+                <span className="text-blue-700 ">Taxa de Juros:</span>
+                <span className="ml-2 font-medium text-blue-900 ">
                   {interestRate}% ao ano
                 </span>
               </div>
             </div>
 
-            <div className="mt-3 text-xs text-blue-600 dark:text-blue-400">
+            <div className="mt-3 text-xs text-blue-600 ">
               <p>
                 <strong>Faixas etárias:</strong>
                 Até 25 anos: 5% <br />
@@ -165,8 +163,8 @@ export function LoanForm({ onCalculate }: LoanFormProps) {
         )}
 
         {!formData.birthDate && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+          <div className="bg-yellow-50  border border-yellow-200  rounded-lg p-4">
+            <p className="text-yellow-800  text-sm">
               💡 Preencha sua data de nascimento para calcular a taxa de juros e
               ver os resultados da simulação.
             </p>

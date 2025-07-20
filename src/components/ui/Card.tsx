@@ -52,4 +52,13 @@ const CardTitle = forwardRef<
 
 CardTitle.displayName = "CardTitle";
 
-export { Card, CardHeader, CardContent, CardTitle };
+const CardDescription = forwardRef<
+  HTMLParagraphElement,
+  HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p ref={ref} className={cn("text-sm text-gray-600", className)} {...props} />
+));
+
+CardDescription.displayName = "CardDescription";
+
+export { Card, CardHeader, CardContent, CardTitle, CardDescription };
