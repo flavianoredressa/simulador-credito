@@ -4,6 +4,13 @@ interface LoanResultsProps {
   calculation: LoanCalculation;
 }
 
+// Formatador para taxa de juros mensal
+const formatInterestRate = (monthlyRate: number) => {
+  // Converte taxa decimal mensal para percentual e formata
+  const percentageRate = monthlyRate * 100;
+  return `${percentageRate.toFixed(2)}%`;
+};
+
 export function LoanResults({ calculation }: LoanResultsProps) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
@@ -25,7 +32,7 @@ export function LoanResults({ calculation }: LoanResultsProps) {
         <div className="flex justify-between items-center py-3 border-b border-gray-100">
           <span className="text-gray-600">Taxa de juros (mês):</span>
           <span className="font-semibold text-gray-900">
-            {calculation.interestRate}%
+            {formatInterestRate(calculation.interestRate)}
           </span>
         </div>
 
