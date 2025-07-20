@@ -68,14 +68,14 @@ export function LoanForm({ onCalculate }: LoanFormProps) {
 
   return (
     <Card variant="elevated">
-      <CardHeader>
-        <CardTitle>Simulação de Empréstimo</CardTitle>
-        <CardDescription>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">Simulação de Empréstimo</CardTitle>
+        <CardDescription className="text-xs">
           Preencha os dados abaixo para calcular sua simulação. A taxa de juros
           será determinada automaticamente pela sua idade.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-3">
         <Input
           type="number"
           label="Valor do Empréstimo"
@@ -111,11 +111,11 @@ export function LoanForm({ onCalculate }: LoanFormProps) {
         />
 
         {age !== null && interestRate !== null && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5">
+            <h3 className="font-semibold text-blue-900 mb-1.5 text-xs">
               Informações Calculadas
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <span className="text-blue-700">Idade:</span>
                 <span className="ml-2 font-medium text-blue-900 ">
@@ -130,21 +130,18 @@ export function LoanForm({ onCalculate }: LoanFormProps) {
               </div>
             </div>
 
-            <div className="mt-3 text-xs text-blue-600 ">
+            <div className="mt-1.5 text-xs text-blue-600 ">
               <p>
-                <strong>Faixas etárias:</strong>
-                Até 25 anos: 5% <br />
-                De 26 a 40 anos: 3% <br />
-                De 41 a 60 anos: 2% <br />
-                Acima de 60: 4%
+                <strong>Faixas:</strong>
+                Até 25: 5% • 26-40: 3% • 41-60: 2% • 60+: 4%
               </p>
             </div>
           </div>
         )}
 
         {!formData.birthDate && (
-          <div className="bg-yellow-50  border border-yellow-200  rounded-lg p-4">
-            <p className="text-yellow-800  text-sm">
+          <div className="bg-yellow-50  border border-yellow-200  rounded-lg p-2.5">
+            <p className="text-yellow-800  text-xs">
               💡 Preencha sua data de nascimento para calcular a taxa de juros e
               ver os resultados da simulação.
             </p>

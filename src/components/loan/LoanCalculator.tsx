@@ -35,8 +35,8 @@ export function LoanCalculator() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="grid lg:grid-cols-2 gap-8">
+    <div className="space-y-3 sm:space-y-4">
+      <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
         <SlideInLeft delay={0.2}>
           <LoanForm onCalculate={handleCalculate} />
         </SlideInLeft>
@@ -53,7 +53,7 @@ export function LoanCalculator() {
         <FadeIn delay={0.6} className="w-full">
           <StaggerContainer staggerDelay={0.2}>
             <StaggerChild>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
                 Análise Visual dos Pagamentos
               </h2>
             </StaggerChild>

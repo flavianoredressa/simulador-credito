@@ -18,7 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || generatedId;
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {label && (
           <label
             htmlFor={inputId}
@@ -30,7 +30,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
         <div className="relative">
           {prefix && (
-            <span className="absolute left-3 top-3 text-gray-500 pointer-events-none">
+            <span className="absolute left-3 top-2.5 text-gray-500 pointer-events-none text-sm">
               {prefix}
             </span>
           )}
@@ -38,9 +38,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             id={inputId}
             className={cn(
-              "w-full px-4 py-3 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8EDB00] focus:border-[#8EDB00] focus:ring-offset-2 text-gray-900 placeholder:text-gray-500 transition-all duration-200 hover:border-gray-400",
-              prefix && "pl-12",
-              suffix && "pr-12",
+              "w-full px-3 py-2.5 border bg-white border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 transition-all duration-200 hover:border-gray-400 text-sm",
+              prefix && "pl-10",
+              suffix && "pr-10",
               error && "border-red-300 focus:ring-red-500 focus:border-red-500",
               className
             )}
@@ -49,16 +49,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {suffix && (
-            <span className="absolute right-3 top-3 text-gray-500 pointer-events-none">
+            <span className="absolute right-3 top-2.5 text-gray-500 pointer-events-none text-sm">
               {suffix}
             </span>
           )}
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
 
         {helperText && !error && (
-          <p className="text-sm text-gray-500">{helperText}</p>
+          <p className="text-xs text-gray-500">{helperText}</p>
         )}
       </div>
     );

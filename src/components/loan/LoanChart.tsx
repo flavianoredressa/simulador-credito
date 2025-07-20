@@ -231,40 +231,40 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
   };
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Grid com Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="text-center">
-              <h3 className="text-sm font-medium text-gray-600">
+              <h3 className="text-xs font-medium text-gray-600">
                 Valor do Empréstimo
               </h3>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-lg font-bold text-blue-600">
                 {formatCurrency(loanData.amount)}
               </p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="text-center">
-              <h3 className="text-sm font-medium text-gray-600">
+              <h3 className="text-xs font-medium text-gray-600">
                 Total de Juros
               </h3>
-              <p className="text-2xl font-bold text-orange-600">
+              <p className="text-lg font-bold text-orange-600">
                 {formatCurrency(loanData.totalInterest)}
               </p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3">
             <div className="text-center">
-              <h3 className="text-sm font-medium text-gray-600">
+              <h3 className="text-xs font-medium text-gray-600">
                 Total a Pagar
               </h3>
-              <p className="text-2xl font-bold text-red-600">
+              <p className="text-lg font-bold text-red-600">
                 {formatCurrency(loanData.totalAmount)}
               </p>
             </div>
@@ -273,16 +273,18 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
       </div>
 
       {/* Gráfico de Pizza - Resumo Principal vs Juros */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Distribuição do Empréstimo</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">
+              Distribuição do Empréstimo
+            </CardTitle>
+            <CardDescription className="text-sm">
               Proporção entre valor principal e juros totais
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={summaryData}
@@ -312,14 +314,14 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
 
         {/* Gráfico de Evolução do Saldo Devedor */}
         <Card>
-          <CardHeader>
-            <CardTitle>Evolução do Saldo Devedor</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Evolução do Saldo Devedor</CardTitle>
+            <CardDescription className="text-sm">
               Como o saldo diminui ao longo do tempo
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={paymentSchedule}>
                 <defs>
                   <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
@@ -362,14 +364,14 @@ const LoanChart = ({ loanData, className }: LoanChartProps) => {
 
       {/* Gráfico de Composição das Parcelas */}
       <Card>
-        <CardHeader>
-          <CardTitle>Composição das Parcelas</CardTitle>
-          <CardDescription>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Composição das Parcelas</CardTitle>
+          <CardDescription className="text-sm">
             Distribuição entre juros e principal nas primeiras 12 parcelas
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={paymentSchedule.slice(0, 12)}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
