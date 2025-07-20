@@ -1,36 +1,39 @@
+"use client";
+
 import Link from "next/link";
-import { APP_CONFIG } from "@/constants/loan";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 
 export function Header() {
+  const pathname = usePathname();
+  const isSimulatorPage = pathname === "/simulador";
+
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-[#50504F] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">💰</span>
-              <span className="ml-2 text-xl font-bold text-gray-900">
-                {APP_CONFIG.title}
-              </span>
+              <Image
+                src="/logo.svg"
+                alt="Creditas Logo"
+                width={122}
+                height={26}
+                className="h-6 w-auto"
+              />
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <nav className="flex space-x-8">
-              <Link
-                href="/"
-                className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
-              >
-                Início
+          {!isSimulatorPage && (
+            <div className="flex items-center">
+              <Link href="/simulador">
+                <Button variant="primary" size="md">
+                  Simular Empréstimo
+                </Button>
               </Link>
-              <Link
-                href="/simulador"
-                className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
-              >
-                Simulador
-              </Link>
-            </nav>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
