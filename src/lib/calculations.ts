@@ -147,7 +147,7 @@ export const calculateLoanWithAge = (
   // Calcula idade e determina taxa de juros
   const age = getAgeFromBirthDate(birthDate);
   const annualRate = getInterestRateByAge(age);
-  const monthlyRate = convertAnnualToMonthlyRate(annualRate) / 100; // Converte para decimal
+  const monthlyRate = annualRate / 100 / 12; // Converte para decimal mensal corretamente
 
   // Fórmula PMT: PV * [r * (1 + r)^n] / [(1 + r)^n - 1]
   let installmentAmount: number;
@@ -167,7 +167,7 @@ export const calculateLoanWithAge = (
   return {
     amount,
     installments,
-    interestRate: convertAnnualToMonthlyRate(annualRate), // Taxa mensal para compatibilidade
+    interestRate: monthlyRate, // Taxa mensal em decimal para os gráficos
     totalAmount,
     installmentAmount,
     totalInterest,
