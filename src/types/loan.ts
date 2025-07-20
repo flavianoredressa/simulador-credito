@@ -11,7 +11,16 @@ export interface LoanResult {
   interestPercentage: number;
 }
 
-export interface LoanCalculation extends LoanData, LoanResult {}
+export interface LoanCalculation extends LoanData, LoanResult {
+  age?: number;
+  annualInterestRate?: number;
+}
+
+export interface LoanWithBirthDate {
+  amount: number;
+  installments: number;
+  birthDate: string;
+}
 
 export type LoanFormData = LoanData;
 
