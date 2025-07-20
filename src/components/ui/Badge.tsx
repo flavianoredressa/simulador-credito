@@ -1,5 +1,9 @@
 import { HTMLAttributes, forwardRef } from "react";
-import { cn } from "@/lib/utils";
+
+// Utility function to combine classes
+const cn = (...classes: (string | undefined | null | false)[]): string => {
+  return classes.filter(Boolean).join(" ");
+};
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: "default" | "success" | "warning" | "danger" | "info";
