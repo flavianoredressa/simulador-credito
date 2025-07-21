@@ -15,6 +15,13 @@ Um simulador de empréstimo moderno e responsivo construído com **Next.js 15**,
 - ✅ **Performance otimizada** com Next.js 15 e Turbopack
 - ✅ **PWA Ready** com service workers
 - ✅ **Acessibilidade** seguindo padrões WCAG
+- ✅ **Deploy automático** com Firebase Hosting + GitHub Actions
+
+## 🌐 Demo
+
+**🔗 Aplicação Online**: https://simulador-credito.web.app
+
+> Deploy automático via GitHub Actions - sempre atualizado com a branch `develop`
 
 ## 🛠️ Stack Tecnológico
 
@@ -473,24 +480,78 @@ type Size = "sm" | "md" | "lg";
 
 ## 🚀 Deploy e Produção
 
-### Plataformas Recomendadas
+### Firebase Hosting (Configurado)
 
-#### **Vercel** (Recomendado)
+O projeto está configurado para deploy automático no **Firebase Hosting** com GitHub Actions.
+
+#### **🔗 URL de Produção**
+
+- **Live App**: https://simulador-credito.web.app
+
+#### **📦 Deploy Automático**
+
+O deploy acontece automaticamente quando você faz merge na branch `develop`:
 
 ```bash
-# Deploy automático via GitHub
-npm i -g vercel
-vercel --prod
+# 1. Faça suas alterações
+git add .
+git commit -m "feat: nova funcionalidade"
+
+# 2. Push para develop (dispara deploy automático)
+git push origin develop
 ```
 
-#### **Netlify**
+O GitHub Actions executará:
+
+1. **Build**: `npm ci && npm run build` - Gera arquivos estáticos na pasta `out/`
+2. **Deploy**: Upload automático para Firebase Hosting
+3. **Live**: Aplicação disponível em ~2 minutos
+
+#### **🛠️ Deploy Manual**
+
+Para deploy manual via CLI:
 
 ```bash
-# Build command
+# Instalar Firebase CLI (se não tiver)
+npm install -g firebase-tools
+
+# Login no Firebase
+firebase login
+
+# Build do projeto
 npm run build
 
-# Publish directory
-out/
+# Deploy
+firebase deploy --only hosting
+```
+
+#### **⚙️ Configuração do Firebase**
+
+```json
+// firebase.json
+{
+  "hosting": {
+    "public": "out", // Pasta com arquivos estáticos
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**", // SPA routing
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+```typescript
+// next.config.ts - Configuração para export estático
+const nextConfig = {
+  output: "export", // Exportação estática
+  trailingSlash: true, // URLs com barra final
+  images: {
+    unoptimized: true, // Imagens sem otimização server-side
+  },
+};
 ```
 
 ### Variáveis de Ambiente
@@ -501,7 +562,49 @@ NODE_ENV=development
 
 # .env.production (produção)
 NODE_ENV=production
-NEXT_PUBLIC_APP_URL=https://seu-dominio.com
+NEXT_PUBLIC_APP_URL=https://simulador-credito.web.app
+```
+
+### 🔄 GitHub Actions Workflows
+
+O projeto inclui workflows automatizados para CI/CD:
+
+#### **Deploy de Produção** (`.github/workflows/firebase-hosting-merge.yml`)
+
+- **Trigger**: Push para branch `develop`
+- **Ações**: Build + Deploy para Firebase Hosting (live)
+- **URL**: https://simulador-credito.web.app
+
+#### **Preview de Pull Request** (`.github/workflows/firebase-hosting-pull-request.yml`)
+
+- **Trigger**: Abertura/atualização de PR
+- **Ações**: Build + Deploy para canal preview
+- **URL**: URL temporária gerada automaticamente
+
+#### **Secrets Configurados**
+
+- `FIREBASE_SERVICE_ACCOUNT_ADMIN_OPERATIVE`: Chave de serviço do Firebase
+- `GITHUB_TOKEN`: Token automático para interação com GitHub
+
+```yaml
+# Exemplo do workflow de deploy
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ADMIN_OPERATIVE }}
+          channelId: live
+          projectId: admin-operative
 ```
 
 ### Otimizações de Performance
@@ -637,10 +740,23 @@ chore: atualização de build, dependências
 ### Processo de Code Review
 
 1. **Abertura**: PR com descrição clara
-2. **Review**: Análise por maintainers
-3. **Feedback**: Sugestões e melhorias
-4. **Aprovação**: Merge após aprovação
-5. **Deploy**: Deploy automático via CI/CD
+2. **Preview**: Deploy automático para ambiente de preview
+3. **Review**: Análise por maintainers
+4. **Feedback**: Sugestões e melhorias
+5. **Aprovação**: Merge após aprovação
+6. **Deploy**: Deploy automático para produção via GitHub Actions
+
+#### **🔄 Fluxo de Deploy**
+
+```bash
+# Desenvolvimento
+feature-branch → PR → Preview Deploy (automático)
+                ↓
+# Aprovação e Merge
+develop → Deploy Production (automático)
+```
+
+**Preview URLs**: Cada PR gera uma URL de preview temporária para testes
 
 ## � Licença
 
@@ -684,7 +800,10 @@ Ao reportar um bug, inclua:
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Hosting-orange?logo=firebase)](https://simulador-credito.web.app)
+[![Deploy Status](https://github.com/flavianoredressa/simulador-credito/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/flavianoredressa/simulador-credito/actions)
 
+[🌐 Ver App Live](https://simulador-credito.web.app) ·
 [⭐ Star no GitHub](https://github.com/flavianoredressa/simulador-credito) ·
 [🐛 Reportar Bug](https://github.com/flavianoredressa/simulador-credito/issues) ·
 [💡 Sugerir Feature](https://github.com/flavianoredressa/simulador-credito/discussions)
