@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 
 export function Header() {
   const pathname = usePathname();
-  const isSimulatorPage = pathname === "/simulador";
+  const isSimulatorPage = pathname.includes("/simulador");
 
   return (
     <header className="bg-[#50504F] shadow-sm">
