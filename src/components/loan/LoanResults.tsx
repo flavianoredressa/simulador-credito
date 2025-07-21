@@ -7,10 +7,10 @@ interface LoanResultsProps {
 }
 
 // Formatador para taxa de juros anual
-const formatInterestRate = (monthlyRate: number) => {
-  // Converte taxa mensal de volta para anual e formata
-  const annualRate = monthlyRate * 12;
-  return `${annualRate.toFixed(2)}%`;
+const formatInterestRate = (monthlyDecimalRate: number) => {
+  // Converte taxa decimal mensal para percentual anual
+  const annualPercentage = monthlyDecimalRate * 12 * 100;
+  return `${annualPercentage.toFixed(2)}%`;
 };
 
 export function LoanResults({ calculation }: LoanResultsProps) {
