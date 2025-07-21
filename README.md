@@ -359,18 +359,61 @@ type SimulatorState =
 
 ```css
 /* Primárias */
---blue-50: #eff6ff;
---blue-600: #2563eb; /* Brand primary */
---blue-700: #1d4ed8; /* Brand dark */
+--primary: #8edb00; /* Verde vibrante - Brand primary */
+--primary-dark: #7ac300; /* Verde escuro - Hover/active states */
+--secondary: #50504f; /* Cinza escuro - Brand secondary */
 
 /* Neutras */
 --gray-50: #f9fafb; /* Background light */
+--gray-100: #f3f4f6; /* Background subtle */
 --gray-900: #111827; /* Text primary */
 
 /* Estados */
---green-600: #059669; /* Success */
---red-600: #dc2626; /* Error */
---yellow-600: #d97706; /* Warning */
+--success: #059669; /* Success messages */
+--error: #dc2626; /* Error states */
+--warning: #d97706; /* Warning alerts */
+```
+
+### Uso das Cores
+
+```tsx
+// Componentes com cores da marca
+<Button variant="primary">   {/* Verde #8EDB00 */}
+  Simular Empréstimo
+</Button>
+
+<Button variant="secondary"> {/* Cinza #50504F */}
+  Cancelar
+</Button>
+
+// Classes Tailwind customizadas
+className="bg-primary text-white hover:bg-primary-600"
+className="text-secondary border-secondary"
+className="focus:ring-primary focus:border-primary"
+```
+
+### Implementação no Tailwind
+
+```typescript
+// tailwind.config.ts
+theme: {
+  extend: {
+    colors: {
+      primary: {
+        DEFAULT: "#8EDB00",
+        50: "#F4FDE0",
+        100: "#E8FCC1",
+        // ... mais variantes
+        600: "#76B800",
+        900: "#2E4C00",
+      },
+      secondary: {
+        DEFAULT: "#50504F",
+        // ... variantes do cinza
+      },
+    },
+  },
+}
 ```
 
 ### Typography
@@ -419,8 +462,8 @@ type SimulatorState =
 ```typescript
 // Button variants
 type ButtonVariant =
-  | "primary" // Blue background, white text
-  | "secondary" // Gray background, dark text
+  | "primary" // Verde (#8EDB00) background, white text
+  | "secondary" // Cinza (#50504F) background, white text
   | "outline" // Transparent bg, colored border
   | "ghost"; // No background, minimal styling
 
@@ -527,7 +570,7 @@ const memoizedCalculation = useMemo(() => {
 <button
   aria-label="Calcular empréstimo"
   aria-describedby="loan-help-text"
-  className="focus:ring-2 focus:ring-blue-500"
+  className="focus:ring-2 focus:ring-primary"
   disabled={isCalculating}
 >
   {isCalculating ? (
