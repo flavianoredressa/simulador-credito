@@ -176,3 +176,37 @@ export const calculateLoanWithAge = (
     annualInterestRate: annualRate,
   };
 };
+
+// Função auxiliar para testes - permite passar taxa de juros diretamente
+export const calculateLoanWithCustomRate = (
+  amount: number,
+  installments: number,
+  annualRate: number
+): LoanCalculation => {
+  const monthlyRate = annualRate / 100 / 12; // Converte para decimal mensal
+
+  // Fórmula PMT: PV * [r * (1 + r)^n] / [(1 + r)^n - 1]
+  let installmentAmount: number;
+
+  if (monthlyRate === 0) {
+    // Se taxa for 0, parcela é simplesmente o valor dividido pelo número de parcelas
+    installmentAmount = amount / installments;
+  } else {
+    const factor = Math.pow(1 + monthlyRate, installments);
+    installmentAmount = (amount * (monthlyRate * factor)) / (factor - 1);
+  }
+
+  const totalAmount = installmentAmount * installments;
+  const totalInterest = totalAmount - amount;
+  const interestPercentage = (totalInterest / amount) * 100;
+
+  return {
+    amount,
+    installments,
+    interestRate: monthlyRate, // Taxa mensal em decimal para os gráficos
+    totalAmount,
+    installmentAmount,
+    totalInterest,
+    interestPercentage,
+  };
+};
