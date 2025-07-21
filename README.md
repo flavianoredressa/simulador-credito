@@ -21,7 +21,7 @@ Um simulador de empréstimo moderno e responsivo construído com **Next.js 15**,
 
 **🔗 Aplicação Online**: https://simulador-credito.web.app
 
-> Deploy automático via GitHub Actions - sempre atualizado com a branch `develop`
+> Deploy automático via Pull Requests para `master` - sempre atualizado com a versão de produção
 
 ## 🛠️ Stack Tecnológico
 
@@ -44,7 +44,7 @@ Um simulador de empréstimo moderno e responsivo construído com **Next.js 15**,
 
 ### Pré-requisitos
 
-- **Node.js** versão 18 ou superior
+- **Node.js** versão 20 ou superior
 - **npm** (incluído com Node.js) ou outro gerenciador de pacotes
 - **Git** para controle de versão
 
@@ -526,22 +526,23 @@ O projeto está configurado para deploy automático no **Firebase Hosting** com 
 
 #### **📦 Deploy Automático**
 
-O deploy acontece automaticamente quando você faz merge na branch `develop`:
+O deploy acontece automaticamente quando você cria um Pull Request para `master`:
 
 ```bash
-# 1. Faça suas alterações
+# 1. Faça suas alterações na branch develop (ou feature branch)
 git add .
 git commit -m "feat: nova funcionalidade"
-
-# 2. Push para develop (dispara deploy automático)
 git push origin develop
+
+# 2. Crie PR para master (dispara deploy automático)
+gh pr create --title "Release v1.x.x" --body "Deploy para produção" --base master --head develop
 ```
 
 O GitHub Actions executará:
-
-1. **Build**: `npm ci && npm run build` - Gera arquivos estáticos na pasta `out/`
-2. **Deploy**: Upload automático para Firebase Hosting
-3. **Live**: Aplicação disponível em ~2 minutos
+1. **Test Coverage**: Verifica se cobertura ≥ 95%
+2. **Build**: `npm ci && npm run build` - Gera arquivos estáticos na pasta `out/`
+3. **Deploy**: Upload automático para Firebase Hosting (live)
+4. **Live**: Aplicação disponível em ~2 minutos
 
 #### **🛠️ Deploy Manual**
 
@@ -607,7 +608,7 @@ O projeto inclui workflows automatizados para CI/CD:
 
 #### **Deploy de Produção** (`.github/workflows/firebase-hosting-merge.yml`)
 
-- **Trigger**: Push para branch `develop`
+- **Trigger**: Pull Request para branch `master`
 - **Pré-requisitos**: ✅ Cobertura de testes ≥ 95%
 - **Ações**: Test Coverage → Build → Deploy para Firebase Hosting (live)
 - **URL**: https://simulador-credito.web.app
@@ -615,7 +616,7 @@ O projeto inclui workflows automatizados para CI/CD:
 
 #### **Preview de Pull Request** (`.github/workflows/firebase-hosting-pull-request.yml`)
 
-- **Trigger**: Abertura/atualização de PR
+- **Trigger**: Pull Request para branches que NÃO sejam `master`
 - **Pré-requisitos**: ✅ Cobertura de testes ≥ 95%
 - **Ações**: Test Coverage → Build → Deploy para canal preview
 - **Comentário**: Relatório de cobertura automático no PR
@@ -628,16 +629,31 @@ O projeto inclui workflows automatizados para CI/CD:
 
 ```yaml
 # Exemplo do workflow de deploy
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting on PR to master
 on:
-  push:
+  pull_request:
     branches:
-      - develop
+      - master
+    types: [opened, synchronize, reopened]
 jobs:
-  build_and_deploy:
+  test_and_coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci && npm run test:coverage
+  build_and_deploy:
+    needs: test_and_coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -790,14 +806,15 @@ chore: atualização de build, dependências
 #### **🔄 Fluxo de Deploy**
 
 ```bash
-# Desenvolvimento
-feature-branch → PR → Preview Deploy (automático)
+# Desenvolvimento e Preview
+feature-branch → PR (não master) → Preview Deploy (automático)
                 ↓
-# Aprovação e Merge
-develop → Deploy Production (automático)
+# Para Produção
+develop → PR para master → Production Deploy (automático)
 ```
 
-**Preview URLs**: Cada PR gera uma URL de preview temporária para testes
+**Preview URLs**: PRs para branches que não sejam `master` geram URLs de preview temporárias
+**Production Deploy**: Apenas PRs para `master` fazem deploy para produção
 
 ## � Licença
 
@@ -850,3 +867,4 @@ Ao reportar um bug, inclua:
 [💡 Sugerir Feature](https://github.com/flavianoredressa/simulador-credito/discussions)
 
 </div>
+````
