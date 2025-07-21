@@ -1,40 +1,47 @@
-# Simulador de Empréstimo
+# 💰 Simulador de Empréstimo
 
-Um simulador de empréstimo moderno e responsivo construído com Next.js 15, TypeScript e Tailwind CSS. A aplicação permite simular empréstimos com cálculos precisos de juros compostos, oferecendo uma interface intuitiva para análise de financiamentos.
+Um simulador de empréstimo moderno e responsivo construído com **Next.js 15**, **TypeScript** e **Tailwind CSS**. A aplicação permite simular empréstimos com cálculos precisos de juros compostos, oferecendo uma interface intuitiva e acessível para análise de financiamentos.
 
-## 🚀 Funcionalidades
+## ✨ Funcionalidades
 
 - ✅ **Simulação de empréstimo** com cálculo de juros compostos
 - ✅ **Interface intuitiva** com resultados em tempo real
 - ✅ **Design responsivo** para todos os dispositivos
-- ✅ **Validação de formulário** robusta
 - ✅ **Formatação automática** de valores monetários brasileiros
-- ✅ **Visualização de resultados** com gráficos interativos
-- ✅ **Testes unitários** completos com Jest
-- ✅ **TypeScript** para type safety
+- ✅ **Visualização de resultados** com componentes interativos
+- ✅ **Animações suaves** com Framer Motion
+- ✅ **Testes unitários** completos com Jest + Testing Library
+- ✅ **TypeScript** para type safety e melhor DX
 - ✅ **Performance otimizada** com Next.js 15 e Turbopack
+- ✅ **PWA Ready** com service workers
+- ✅ **Acessibilidade** seguindo padrões WCAG
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Stack Tecnológico
 
-- **Framework**: Next.js 15 com App Router
-- **Linguagem**: TypeScript 5+
+### Frontend
+
+- **Framework**: Next.js 15.4.2 com App Router
+- **Linguagem**: TypeScript 5
 - **Estilização**: Tailwind CSS 4
-- **Bundler**: Turbopack (para desenvolvimento)
-- **Testes**: Jest + Testing Library
-- **Linting**: ESLint com configurações personalizadas
-- **Formatação**: Prettier
+- **Animações**: Framer Motion 12
+- **Ícones**: Lucide React
+- **Gráficos**: Recharts 3
 
-## � Setup e Instalação
+### Desenvolvimento
+
+- **Bundler**: Turbopack (desenvolvimento)
+- **Testes**: Jest 30 + Testing Library
+- **Linting**: ESLint 9 com TypeScript
+
+## 🚀 Setup e Instalação
 
 ### Pré-requisitos
 
-Certifique-se de ter instalado:
-
 - **Node.js** versão 18 ou superior
-- **npm**, **yarn**, **pnpm** ou **bun** como gerenciador de pacotes
+- **npm** (incluído com Node.js) ou outro gerenciador de pacotes
 - **Git** para controle de versão
 
-### Instalação Passo a Passo
+### Instalação
 
 1. **Clone o repositório**:
 
@@ -46,247 +53,174 @@ cd simulador-credito
 2. **Instale as dependências**:
 
 ```bash
-# Com npm
 npm install
-
-# Com yarn
+# ou
 yarn install
-
-# Com pnpm
+# ou
 pnpm install
-
-# Com bun
-bun install
 ```
 
-3. **Inicie o servidor de desenvolvimento**:
+3. **Execute em modo desenvolvimento**:
 
 ```bash
 npm run dev
-# ou
-yarn dev
-# ou
-pnpm dev
-# ou
-bun dev
 ```
 
 4. **Acesse a aplicação**:
    - Abra [http://localhost:3000](http://localhost:3000) no seu navegador
-   - A aplicação será recarregada automaticamente quando você fizer alterações
+   - O Turbopack oferece hot reload ultrarrápido durante o desenvolvimento
 
 ### Build para Produção
 
 ```bash
-# Build da aplicação
-npm run build
-
-# Inicia o servidor de produção
-npm run start
+npm run build    # Gera build otimizada
+npm start        # Inicia servidor de produção
 ```
 
-## 💡 Exemplos de Uso
+## 💡 Como Usar
 
-### Exemplo 1: Simulação Básica
+### Simulação Rápida
 
-1. **Acesse** a página inicial em `http://localhost:3000`
+1. **Acesse** a página inicial
 2. **Clique** em "Simular Empréstimo" ou navegue para `/simulador`
-3. **Preencha** os campos:
-   - Valor do empréstimo: R$ 10.000,00
-   - Taxa de juros: 2,5% ao mês
-   - Número de parcelas: 12 meses
-4. **Visualize** os resultados instantaneamente:
-   - Parcela mensal: R$ 945,56
-   - Total a pagar: R$ 11.346,72
-   - Total de juros: R$ 1.346,72
+3. **Preencha** os dados:
+   - **Valor do Empréstimo**: R$ 1.000 a R$ 1.000.000
+   - **Prazo**: 1 a 60 meses
+   - **Data de Nascimento**: Para validação de idade
+4. **Visualize** os resultados em tempo real
 
-### Exemplo 2: Comparação de Cenários
+### Exemplo Prático
 
 ```typescript
-// Cenário A: Prazo menor, parcela maior
-Valor: R$ 50.000
-Taxa: 1,8% a.m.
+// Dados de entrada
+Valor: R$ 25.000,00
 Prazo: 24 meses
-Resultado: Parcela de R$ 2.547,89
+Taxa: 2,5% a.m.
 
-// Cenário B: Prazo maior, parcela menor
-Valor: R$ 50.000
-Taxa: 1,8% a.m.
-Prazo: 48 meses
-Resultado: Parcela de R$ 1.567,23
+// Resultado automático
+Parcela: R$ 1.234,56
+Total: R$ 29.629,44
+Juros: R$ 4.629,44
 ```
 
-### Exemplo 3: Usando a API de Cálculos
+### API de Cálculos
 
 ```typescript
-import { calculateLoan, LoanData } from "@/types/loan";
+import { calculateLoan, type LoanData } from "@/lib/calculations";
 
 const loanData: LoanData = {
   amount: 25000,
-  installments: 18,
-  interestRate: 2.1,
+  installments: 24,
+  interestRate: 2.5,
 };
 
 const result = calculateLoan(loanData);
-console.log(`Parcela: ${result.installmentAmount}`);
-console.log(`Total: ${result.totalAmount}`);
+// result.installmentAmount, result.totalAmount, etc.
 ```
 
-## 📁 Estrutura do Projeto
+## 📁 Arquitetura do Projeto
 
 ```
 src/
 ├── app/                           # Next.js App Router
-│   ├── layout.tsx                 # Layout raiz da aplicação
-│   ├── page.tsx                   # Landing page
-│   ├── globals.css                # Estilos globais
-│   └── simulador/
-│       └── page.tsx               # Página principal do simulador
+│   ├── layout.tsx                 # Layout raiz com providers
+│   ├── page.tsx                   # Landing page com hero section
+│   ├── globals.css                # Estilos globais do Tailwind
+│   ├── viewport.ts                # Configurações de viewport PWA
+│   ├── simulador/                 # Rota do simulador
+│   │   └── page.tsx               # Página principal do simulador
+│   └── __tests__/                 # Testes das páginas
 ├── components/                    # Componentes React reutilizáveis
-│   ├── ui/                        # Componentes básicos de UI
-│   │   ├── Button.tsx             # Botão com variantes
-│   │   ├── Input.tsx              # Input com formatação
-│   │   ├── Card.tsx               # Container para conteúdo
-│   │   └── Badge.tsx              # Badges informativos
+│   ├── ui/                        # Design System base
+│   │   ├── Button.tsx             # Componente de botão com variantes
+│   │   ├── Input.tsx              # Input com máscara e validação
+│   │   ├── Card.tsx               # Container de conteúdo
+│   │   └── Badge.tsx              # Badges de status/informação
 │   ├── layout/                    # Componentes de layout
-│   │   ├── Header.tsx             # Cabeçalho da aplicação
-│   │   └── Footer.tsx             # Rodapé com informações
-│   ├── loan/                      # Componentes específicos do simulador
-│   │   ├── LoanCalculator.tsx     # Container principal
-│   │   ├── LoanForm.tsx           # Formulário de entrada
-│   │   ├── LoanResults.tsx        # Exibição de resultados
-│   │   └── LoanChart.tsx          # Gráficos e visualizações
+│   │   ├── Header.tsx             # Cabeçalho com navegação
+│   │   └── Footer.tsx             # Rodapé informativo
+│   ├── loan/                      # Funcionalidades do simulador
+│   │   ├── LoanCalculator.tsx     # Container principal do simulador
+│   │   ├── LoanForm.tsx           # Formulário com validações
+│   │   ├── LoanResults.tsx        # Exibição dos resultados
+│   │   └── LoanChart.tsx          # Gráficos (implementação futura)
 │   └── animations/                # Componentes de animação
-│       ├── FadeIn.tsx             # Animação de fade
-│       ├── SlideInLeft.tsx        # Slide da esquerda
-│       └── SlideInRight.tsx       # Slide da direita
-├── types/                         # Definições TypeScript
-│   └── loan.ts                    # Interfaces do domínio de empréstimos
-├── lib/                          # Utilitários e configurações
-│   ├── utils.ts                  # Funções utilitárias gerais
-│   ├── validations.ts           # Esquemas de validação
-│   ├── calculations.ts          # Lógica de cálculos financeiros
-│   └── __tests__/               # Testes unitários
-└── constants/                   # Constantes da aplicação
-    └── loan.ts                  # Limites e configurações
+│       └── MotionComponents.tsx   # Wrappers do Framer Motion
+├── lib/                          # Lógica de negócio e utilitários
+│   ├── calculations.ts           # Cálculos financeiros (juros compostos)
+│   ├── utils.ts                  # Funções utilitárias (formatação, etc.)
+│   └── __tests__/               # Testes unitários das funções
+├── types/                        # Definições TypeScript
+│   ├── loan.ts                   # Interfaces do domínio de empréstimos
+│   └── __tests__/               # Testes de tipos e validações
+└── constants/                   # Configurações e constantes
+    └── loan.ts                  # Limites, taxas e mensagens
 ```
 
 ## 🏗️ Decisões de Arquitetura
 
-### 1. **Next.js 15 com App Router**
+### Core Stack
 
-**Por quê?**
+#### **Next.js 15 + App Router**
 
-- **Performance**: App Router oferece melhor performance com React Server Components
-- **Estrutura**: Roteamento baseado em sistema de arquivos mais intuitivo
-- **SEO**: Renderização server-side nativa para melhor indexação
-- **Futuro**: Representa a direção futura do Next.js
+- **Performance**: React Server Components para otimização automática
+- **DX**: Hot reload com Turbopack, roteamento intuitivo
+- **SEO**: SSR nativo, meta tags dinâmicas
+- **Deploy**: Otimizações automáticas para produção
 
-### 2. **TypeScript Rigoroso**
+#### **TypeScript Rigoroso**
 
-**Por quê?**
+- **Type Safety**: Validação em tempo de compilação
+- **IntelliSense**: Autocomplete preciso e documentação inline
+- **Refatoração**: Mudanças seguras em grande escala
+- **Manutenibilidade**: Código autodocumentado
 
-- **Type Safety**: Previne erros em tempo de compilação
-- **Documentação**: Os tipos servem como documentação viva
-- **Refatoração**: Facilita mudanças grandes no código
-- **Produtividade**: IntelliSense mais preciso
+### Padrões de Design
 
-**Configuração**:
+#### **Composition over Inheritance**
 
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
-  }
+```typescript
+// ❌ Herança rígida
+class BaseButton extends Component
+
+// ✅ Composição flexível
+<Button variant="primary" size="lg">
+  <Icon /> Texto
+</Button>
+```
+
+#### **Props Interface Design**
+
+```typescript
+interface ButtonProps {
+  variant?: "primary" | "secondary" | "outline";
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
+  children: React.ReactNode;
 }
 ```
 
-### 3. **Separação de Responsabilidades**
+### Estado e Fluxo de Dados
 
-**Estrutura em Camadas**:
+#### **Estado Local First**
 
-- **Presentation Layer**: Componentes React (`/components`)
-- **Business Logic**: Cálculos financeiros (`/lib/calculations.ts`)
-- **Type Definitions**: Contratos de dados (`/types`)
-- **Constants**: Configurações centralizadas (`/constants`)
+- `useState` para formulários simples
+- Props drilling para comunicação parent-child
+- Lifting state up quando necessário
+- **Sem Redux**: Complexidade desnecessária para o escopo
 
-### 4. **Sistema de Design Componetizado**
+#### **Validação em Camadas**
 
-**Abordagem**:
+```typescript
+// 1. Client-side (UX imediata)
+const schema = z.object({...})
 
-- **Atomic Design**: Componentes básicos reutilizáveis em `/ui`
-- **Composition over Inheritance**: Componentes compostos
-- **Variants**: Sistema de variantes com Tailwind
-- **Props Interface**: Interfaces TypeScript bem definidas
+// 2. Runtime (Type guards)
+function isValidLoan(data: unknown): data is LoanData
 
-### 5. **Estratégia de Testes**
-
-**Pirâmide de Testes**:
-
+// 3. Business logic (Domínio)
+function validateLoanConstraints(loan: LoanData)
 ```
-    /\
-   /  \     E2E Tests (Poucos)
-  /____\    Integration Tests (Alguns)
- /______\   Unit Tests (Muitos)
-/________\  Static Analysis (ESLint/TS)
-```
-
-**Cobertura**:
-
-- **Unidade**: Funções de cálculo, utilitários, validações
-- **Componentes**: Renderização, eventos, props
-- **Integração**: Fluxos completos de simulação
-
-### 6. **Gerenciamento de Estado**
-
-**Estratégia**:
-
-- **Estado Local**: `useState` para formulários simples
-- **Props Drilling**: Comunicação parent-child direta
-- **Lifting State Up**: Estado compartilhado no componente pai
-- **No Redux**: Complexidade desnecessária para este escopo
-
-### 7. **Performance e Otimização**
-
-**Técnicas Aplicadas**:
-
-- **Code Splitting**: Lazy loading automático do Next.js
-- **Tree Shaking**: Eliminação de código não utilizado
-- **Memoization**: `React.memo` em componentes pesados
-- **Turbopack**: Bundler otimizado para desenvolvimento
-
-### 8. **Validação e Tratamento de Erros**
-
-**Abordagem Defensiva**:
-
-- **Validação de Input**: Limites e tipos corretos
-- **Error Boundaries**: Captura de erros React
-- **Type Guards**: Verificação runtime de tipos
-- **Fallbacks**: Estados de erro gracioso
-
-### 9. **Acessibilidade (a11y)**
-
-**Implementações**:
-
-- **ARIA Labels**: Descrições para screen readers
-- **Keyboard Navigation**: Suporte completo ao teclado
-- **Color Contrast**: Cores com contraste adequado
-- **Focus Management**: Indicadores visuais de foco
-
-### 10. **Internacionalização (i18n)**
-
-**Preparação Futura**:
-
-- **Estrutura**: Componentes preparados para múltiplos idiomas
-- **Formatação**: Números e moeda brasileira
-- **Mensagens**: Textos centralizados para fácil tradução
-  │ └── calculations.ts # Lógica de cálculos
-  ├── types/ # Definições de tipos TypeScript
-  │ └── loan.ts
-  └── constants/ # Constantes da aplicação
-  └── loan.ts
 
 ````
 
@@ -318,10 +252,6 @@ O projeto mantém alta cobertura de testes:
   - Juros compostos
   - Validação de parâmetros
   - Edge cases (valores extremos)
-- ✅ **Validações** (`validations.ts`)
-  - Schemas Zod
-  - Limites de valores
-  - Mensagens de erro
 - ✅ **Utilitários** (`utils.ts`)
   - Formatação de moeda
   - Manipulação de classes CSS
@@ -350,122 +280,169 @@ describe("calculateLoan", () => {
 });
 ```
 
-## 🔧 Scripts Disponíveis
+## ⚙️ Scripts Disponíveis
+
+### Desenvolvimento
 
 ```bash
-# Desenvolvimento
-npm run dev          # Servidor de desenvolvimento (Turbopack)
-npm run build        # Build otimizada para produção
-npm run start        # Servidor de produção
-npm run preview      # Preview do build local
-
-# Qualidade de Código
-npm run lint         # ESLint
-npm run lint:fix     # ESLint com correções automáticas
-npm run type-check   # Verificação de tipos TypeScript
-
-# Testes
-npm test             # Jest
-npm run test:watch   # Jest em modo watch
-npm run test:coverage # Relatório de cobertura
-npm run test:ui      # Interface visual para testes
+npm run dev     # Servidor desenvolvimento com Turbopack
+npm run build   # Build otimizada para produção
+npm start       # Servidor de produção
 ```
 
-## 📊 Funcionalidades do Simulador
+### Qualidade de Código
 
-### Sistema de Cálculos
-
-O simulador implementa cálculos financeiros precisos:
-
-#### **Juros Compostos (Padrão)**
-
+```bash
+npm run lint    # ESLint para análise estática
+npm test        # Jest + Testing Library
+npm run test:watch    # Testes em modo watch
+npm run test:coverage # Cobertura de testes
 ```
-Fórmula: M = C × (1 + i)^t
-Onde:
-- M = Montante final
-- C = Capital inicial
-- i = Taxa de juros (decimal)
-- t = Tempo (períodos)
 
-Parcela = M / n
+## � Funcionalidades do Simulador
+
+### Motor de Cálculos Financeiros
+
+#### **Juros Compostos**
+
+```typescript
+// Fórmula implementada
+M = C × (1 + i)ⁿ
+PMT = M / n
+
+// Onde:
+// M = Montante final
+// C = Capital inicial (valor emprestado)
+// i = Taxa de juros mensal (decimal)
+// n = Número de parcelas
+// PMT = Valor da parcela mensal
 ```
 
 #### **Validações Automáticas**
 
-- **Valor mínimo**: R$ 1.000,00
-- **Valor máximo**: R$ 1.000.000,00
-- **Parcelas**: 1 a 60 meses
-- **Taxa**: 0,1% a 15% ao mês
+- **Valor**: R$ 1.000 a R$ 1.000.000
+- **Prazo**: 1 a 60 meses
+- **Taxa**: Baseada em tabelas do mercado financeiro
 
-#### **Formatação Brasileira**
+#### **Formatação BR**
 
-- Moeda: Real (BRL)
-- Separadores: ponto (milhares) e vírgula (decimais)
-- Símbolo: R$ prefixado
+- Moeda: Real brasileiro (R$)
+- Separadores: ponto (milhares), vírgula (decimais)
+- Validação: CPF, datas, valores monetários
 
-### Interface do Usuário
+### Interface Intuitiva
+
+```typescript
+// Estados do simulador
+type SimulatorState =
+  | "idle" // Aguardando entrada
+  | "calculating" // Processando
+  | "results" // Exibindo resultados
+  | "error"; // Tratando erros
+```
 
 #### **Componentes Principais**
 
-1. **LoanForm**: Formulário de entrada com validação
-2. **LoanResults**: Exibição formatada dos resultados
-3. **LoanChart**: Visualização gráfica (futuro)
+- **LoanForm**: Formulário com validação em tempo real
+- **LoanResults**: Resultados formatados e acessíveis
+- **LoanChart**: Visualizações (em desenvolvimento)
 
-#### **Estados da Aplicação**
+#### **Responsividade**
 
-- **Idle**: Aguardando entrada do usuário
-- **Calculating**: Processando cálculos
-- **Results**: Exibindo resultados
-- **Error**: Tratamento de erros
+- **Mobile First**: Otimizado para dispositivos móveis
+- **Breakpoints**: sm, md, lg, xl (Tailwind CSS)
+- **Touch Friendly**: Botões e inputs adequados para touch
 
 ## 🎨 Design System
 
 ### Paleta de Cores
 
 ```css
-/* Cores Primárias */
---blue-50: #eff6ff;
---blue-600: #2563eb;
---blue-700: #1d4ed8;
+/* Primárias */
+--primary: #8edb00; /* Verde vibrante - Brand primary */
+--primary-dark: #7ac300; /* Verde escuro - Hover/active states */
+--secondary: #50504f; /* Cinza escuro - Brand secondary */
 
-/* Cores Neutras */
---gray-50: #f9fafb;
---gray-600: #4b5563;
---gray-900: #111827;
+/* Neutras */
+--gray-50: #f9fafb; /* Background light */
+--gray-100: #f3f4f6; /* Background subtle */
+--gray-900: #111827; /* Text primary */
 
 /* Estados */
---red-600: #dc2626; /* Erro */
---yellow-600: #d97706; /* Aviso */
---green-600: #059669; /* Sucesso */
+--success: #059669; /* Success messages */
+--error: #dc2626; /* Error states */
+--warning: #d97706; /* Warning alerts */
 ```
 
-### Typography Scale
+### Uso das Cores
+
+```tsx
+// Componentes com cores da marca
+<Button variant="primary">   {/* Verde #8EDB00 */}
+  Simular Empréstimo
+</Button>
+
+<Button variant="secondary"> {/* Cinza #50504F */}
+  Cancelar
+</Button>
+
+// Classes Tailwind customizadas
+className="bg-primary text-white hover:bg-primary-600"
+className="text-secondary border-secondary"
+className="focus:ring-primary focus:border-primary"
+```
+
+### Implementação no Tailwind
+
+```typescript
+// tailwind.config.ts
+theme: {
+  extend: {
+    colors: {
+      primary: {
+        DEFAULT: "#8EDB00",
+        50: "#F4FDE0",
+        100: "#E8FCC1",
+        // ... mais variantes
+        600: "#76B800",
+        900: "#2E4C00",
+      },
+      secondary: {
+        DEFAULT: "#50504F",
+        // ... variantes do cinza
+      },
+    },
+  },
+}
+```
+
+### Typography
 
 ```css
-/* Headings */
+/* Headings - Inter font family */
 .text-3xl {
   font-size: 1.875rem;
-} /* 30px */
+} /* 30px - Page titles */
 .text-2xl {
   font-size: 1.5rem;
-} /* 24px */
+} /* 24px - Section titles */
 .text-xl {
   font-size: 1.25rem;
-} /* 20px */
+} /* 20px - Card titles */
 
-/* Body */
+/* Body text */
 .text-base {
   font-size: 1rem;
-} /* 16px */
+} /* 16px - Primary text */
 .text-sm {
   font-size: 0.875rem;
-} /* 14px */
+} /* 14px - Secondary text */
 ```
 
-### Spacing System
+### Spacing Scale
 
 ```css
-/* Baseado em múltiplos de 4px */
+/* Base: 4px (0.25rem) */
 .p-2 {
   padding: 0.5rem;
 } /* 8px */
@@ -480,77 +457,161 @@ Parcela = M / n
 } /* 32px */
 ```
 
+### Component Variants
+
+```typescript
+// Button variants
+type ButtonVariant =
+  | "primary" // Verde (#8EDB00) background, white text
+  | "secondary" // Cinza (#50504F) background, white text
+  | "outline" // Transparent bg, colored border
+  | "ghost"; // No background, minimal styling
+
+// Size variants
+type Size = "sm" | "md" | "lg";
+```
+
 ## 🚀 Deploy e Produção
+
+### Plataformas Recomendadas
+
+#### **Vercel** (Recomendado)
+
+```bash
+# Deploy automático via GitHub
+npm i -g vercel
+vercel --prod
+```
+
+#### **Netlify**
+
+```bash
+# Build command
+npm run build
+
+# Publish directory
+out/
+```
 
 ### Variáveis de Ambiente
 
 ```env
-# .env.local
+# .env.local (desenvolvimento)
+NODE_ENV=development
+
+# .env.production (produção)
 NODE_ENV=production
-NEXT_PUBLIC_APP_URL=https://simulador-credito.vercel.app
+NEXT_PUBLIC_APP_URL=https://seu-dominio.com
 ```
 
-### Plataformas Suportadas
+### Otimizações de Performance
 
-- **Vercel**: Deploy automático via GitHub
-- **Netlify**: Build commands configurados
-- **Railway**: Container Docker
-- **AWS/Azure**: Infraestrutura personalizada
-
-### Configurações de Build
-
-```javascript
+```typescript
 // next.config.ts
 const nextConfig = {
-  experimental: {
-    turbopack: true, // Desenvolvimento mais rápido
-  },
+  // Compressão automática
+  compress: true,
+
+  // Remoção de console em produção
   compiler: {
-    removeConsole: true, // Remove console.log em produção
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // PWA configuration
+  experimental: {
+    pwa: {
+      dest: "public",
+      register: true,
+      skipWaiting: true,
+    },
   },
 };
 ```
 
-## 🔐 Segurança e Boas Práticas
+## 🔐 Boas Práticas e Segurança
 
 ### Validação de Dados
 
-- **Client-side**: Validação imediata para UX
-- **Type Safety**: TypeScript previne erros de tipo
-- **Sanitização**: Inputs limpos antes do processamento
+```typescript
+// Client-side validation (UX)
+const loanSchema = z.object({
+  amount: z.number().min(1000).max(1000000),
+  installments: z.number().min(1).max(60),
+  interestRate: z.number().min(0.1).max(15),
+});
+
+// Runtime type checking
+function isValidLoanData(data: unknown): data is LoanData {
+  return loanSchema.safeParse(data).success;
+}
+```
 
 ### Performance
 
-- **Code Splitting**: Carregamento sob demanda
-- **Tree Shaking**: Remoção de código não utilizado
-- **Memoization**: Cache de cálculos custosos
-- **Lazy Loading**: Componentes carregados quando necessário
+#### **Code Splitting**
 
-### Acessibilidade
+- Componentes carregados sob demanda
+- Roteamento otimizado pelo Next.js
+- Lazy loading de recursos pesados
 
-```jsx
+#### **Memoization**
+
+```typescript
+// Evita recálculos desnecessários
+const memoizedCalculation = useMemo(() => {
+  return calculateLoan(loanData);
+}, [loanData.amount, loanData.installments, loanData.interestRate]);
+```
+
+### Acessibilidade (a11y)
+
+```tsx
 // Exemplo de componente acessível
 <button
   aria-label="Calcular empréstimo"
-  aria-describedby="loan-form-help"
-  className="focus:ring-2 focus:ring-blue-500"
+  aria-describedby="loan-help-text"
+  className="focus:ring-2 focus:ring-primary"
+  disabled={isCalculating}
 >
-  Simular
+  {isCalculating ? (
+    <>
+      <Spinner aria-hidden="true" />
+      <span className="sr-only">Calculando...</span>
+    </>
+  ) : (
+    "Simular"
+  )}
 </button>
 ```
 
+### Estratégias de Cache
+
+- **Build Cache**: Next.js otimiza builds incrementais
+- **Runtime Cache**: Service workers para PWA
+- **Memory Cache**: Memoização de cálculos custosos
+
 ## 🤝 Contribuindo
 
-### Setup para Desenvolvimento
+### Configuração para Desenvolvimento
 
-1. **Fork** o repositório
-2. **Clone** seu fork localmente
-3. **Crie** uma branch: `git checkout -b feature/nova-funcionalidade`
-4. **Instale** dependências: `npm install`
-5. **Execute** testes: `npm test`
-6. **Commit** mudanças: `git commit -m 'feat: adiciona nova funcionalidade'`
-7. **Push** para branch: `git push origin feature/nova-funcionalidade`
-8. **Abra** um Pull Request
+```bash
+# 1. Fork o repositório no GitHub
+# 2. Clone seu fork
+git clone https://github.com/seu-usuario/simulador-credito.git
+cd simulador-credito
+
+# 3. Instale dependências
+npm install
+
+# 4. Crie uma branch para sua feature
+git checkout -b feature/nova-funcionalidade
+
+# 5. Execute os testes
+npm test
+
+# 6. Inicie o desenvolvimento
+npm run dev
+```
 
 ### Padrões de Commit
 
@@ -559,33 +620,73 @@ feat: nova funcionalidade
 fix: correção de bug
 docs: atualização de documentação
 test: adição/correção de testes
-refactor: refatoração de código
-style: formatação/estilo
-chore: tarefas de manutenção
-wip: tarefa em andamento
+refactor: refatoração sem mudança de comportamento
+style: formatação, ponto e vírgula, etc
+chore: atualização de build, dependências
 ```
 
-### Code Review Checklist
+### Checklist para Pull Request
 
-- [ ] Testes passando
-- [ ] TypeScript sem erros
-- [ ] ESLint sem warnings
-- [ ] Componentes documentados
-- [ ] Performance adequada
-- [ ] Acessibilidade verificada
+- [ ] ✅ Testes passando (`npm test`)
+- [ ] ✅ TypeScript sem erros (`npm run build`)
+- [ ] ✅ ESLint sem warnings (`npm run lint`)
+- [ ] ✅ Código documentado
+- [ ] ✅ Funcionalidade testada em diferentes dispositivos
+- [ ] ✅ Acessibilidade verificada
 
-## 📝 Licença
+### Processo de Code Review
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+1. **Abertura**: PR com descrição clara
+2. **Review**: Análise por maintainers
+3. **Feedback**: Sugestões e melhorias
+4. **Aprovação**: Merge após aprovação
+5. **Deploy**: Deploy automático via CI/CD
+
+## � Licença
+
+Este projeto está sob a **Licença MIT**. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+```
+MIT License
+
+Copyright (c) 2024 Flaviano Redressa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software")...
+```
 
 ---
 
-## 📞 Suporte
+## 📞 Contato e Suporte
 
-- **Issues**: [GitHub Issues](https://github.com/flavianoredressa/simulador-credito/issues)
+### Canais de Comunicação
 
-- **Email**: flavianoredressa@gmail.com
+- **📧 Email**: [flavianoredressa@gmail.com](mailto:flavianoredressa@gmail.com)
+- **🐛 Issues**: [GitHub Issues](https://github.com/flavianoredressa/simulador-credito/issues)
+- **💬 Discussões**: [GitHub Discussions](https://github.com/flavianoredressa/simulador-credito/discussions)
+
+### Reportar Problemas
+
+Ao reportar um bug, inclua:
+
+- **Versão**: Do navegador e sistema operacional
+- **Steps**: Para reproduzir o problema
+- **Expected**: Comportamento esperado
+- **Actual**: Comportamento atual
+- **Screenshots**: Se aplicável
 
 ---
 
-**Feito com ❤️ e TypeScript**
+<div align="center">
+
+**🚀 Feito com ❤️ e TypeScript**
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
+
+[⭐ Star no GitHub](https://github.com/flavianoredressa/simulador-credito) ·
+[🐛 Reportar Bug](https://github.com/flavianoredressa/simulador-credito/issues) ·
+[💡 Sugerir Feature](https://github.com/flavianoredressa/simulador-credito/discussions)
+
+</div>

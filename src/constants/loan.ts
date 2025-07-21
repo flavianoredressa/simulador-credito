@@ -29,19 +29,19 @@ export const APP_CONFIG = {
   description: "Simule seu empréstimo de forma rápida e segura",
   features: [
     {
-      icon: "📊",
+      icon: "/veiculo.png",
       title: "Cálculo Preciso",
-      description: "Simulações exatas com diferentes cenários de pagamento",
+      description: "Simule um crédito com seu carro em garantia",
     },
     {
-      icon: "⚡",
+      icon: "/imovel.png",
       title: "Resultado Instantâneo",
-      description: "Obtenha resultados em segundos, sem burocracias",
+      description: "Simule um crédito com seu imóvel em garantia",
     },
     {
-      icon: "🔒",
+      icon: "/consignado.webp",
       title: "100% Seguro",
-      description: "Seus dados são protegidos e não armazenamos informações",
+      description: "Por dentro do Crédito do Trabalhador",
     },
   ],
 } as const;

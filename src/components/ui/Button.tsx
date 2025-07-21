@@ -1,9 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
-
-// Utility function to combine classes
-const cn = (...classes: (string | undefined | null | false)[]): string => {
-  return classes.filter(Boolean).join(" ");
-};
+import { cn } from "../../lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
@@ -17,13 +13,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200",
+        "bg-[#8EDB00] hover:bg-[#76B800] text-[#50504F] focus:ring-2 focus:ring-[#8EDB00] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200",
       secondary:
-        "bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500 transition-all duration-200",
+        "bg-[#50504F] hover:bg-[#3A3A3A] text-white focus:ring-2 focus:ring-[#50504F] transition-all duration-200",
       outline:
-        "border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500 transition-all duration-200",
+        "border-2 border-[#8EDB00] text-[#8EDB00] hover:bg-[#8EDB00] hover:text-white focus:ring-2 focus:ring-[#8EDB00] transition-all duration-200",
       ghost:
-        "text-blue-600 hover:bg-blue-50 focus:ring-blue-500 transition-all duration-200",
+        "text-[#8EDB00] hover:bg-[#F4FDE0] focus:ring-2 focus:ring-[#8EDB00] transition-all duration-200",
     };
     const sizes = {
       sm: "px-3 py-2 text-sm",
