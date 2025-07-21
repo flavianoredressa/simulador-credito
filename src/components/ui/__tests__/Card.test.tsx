@@ -87,8 +87,8 @@ describe("Card Components", () => {
       const { container } = render(<CardHeader>Header</CardHeader>);
       const header = container.firstChild as HTMLElement;
 
-      expect(header).toHaveClass("p-6");
-      expect(header).toHaveClass("pb-4");
+      expect(header).toHaveClass("p-4");
+      expect(header).toHaveClass("pb-2");
     });
 
     it("should apply custom className", () => {
@@ -115,7 +115,7 @@ describe("Card Components", () => {
       const { container } = render(<CardContent>Content</CardContent>);
       const content = container.firstChild as HTMLElement;
 
-      expect(content).toHaveClass("p-6");
+      expect(content).toHaveClass("p-4");
       expect(content).toHaveClass("pt-0");
     });
 
@@ -150,7 +150,7 @@ describe("Card Components", () => {
       const { container } = render(<CardTitle>Title</CardTitle>);
       const title = container.firstChild as HTMLElement;
 
-      expect(title).toHaveClass("text-2xl");
+      expect(title).toHaveClass("text-xl");
       expect(title).toHaveClass("font-semibold");
       expect(title).toHaveClass("text-gray-900");
     });

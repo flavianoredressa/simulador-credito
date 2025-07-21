@@ -299,11 +299,11 @@ describe("LoanForm Component", () => {
     await user.type(birthDateInput, "1990-01-01");
 
     // Should show the age rate table
-    expect(screen.getByText("Faixas etárias:")).toBeInTheDocument();
-    expect(screen.getByText(/Até 25 anos: 5%/)).toBeInTheDocument();
-    expect(screen.getByText(/De 26 a 40 anos: 3%/)).toBeInTheDocument();
-    expect(screen.getByText(/De 41 a 60 anos: 2%/)).toBeInTheDocument();
-    expect(screen.getByText(/Acima de 60: 4%/)).toBeInTheDocument();
+    expect(screen.getByText("Faixas:")).toBeInTheDocument();
+    expect(screen.getByText(/Até 25: 5%/)).toBeInTheDocument();
+    expect(screen.getByText(/26-40: 3%/)).toBeInTheDocument();
+    expect(screen.getByText(/41-60: 2%/)).toBeInTheDocument();
+    expect(screen.getByText(/60\+: 4%/)).toBeInTheDocument();
   });
 
   it("should clear age and interest rate when birth date is cleared", async () => {

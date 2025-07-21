@@ -28,7 +28,7 @@ describe("LoanResults Component", () => {
     expect(screen.getByText("Total a pagar:")).toBeTruthy();
 
     // Check if interest rate is displayed
-    expect(screen.getByText("Taxa de juros (mês):")).toBeTruthy();
+    expect(screen.getByText("Taxa de juros (ano):")).toBeTruthy();
 
     // Check if installments count is displayed
     expect(screen.getByText("Prazo:")).toBeTruthy();

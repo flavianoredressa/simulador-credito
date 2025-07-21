@@ -49,7 +49,7 @@ describe("Input Component", () => {
     expect(screen.getByText("R$")).toBeTruthy();
 
     const input = screen.getByRole("textbox");
-    expect(input).toHaveClass("pl-12");
+    expect(input).toHaveClass("pl-10");
   });
 
   it("should render with suffix", () => {
@@ -58,7 +58,7 @@ describe("Input Component", () => {
     expect(screen.getByText("%")).toBeTruthy();
 
     const input = screen.getByRole("textbox");
-    expect(input).toHaveClass("pr-12");
+    expect(input).toHaveClass("pr-10");
   });
 
   it("should render with both prefix and suffix", () => {
@@ -68,7 +68,7 @@ describe("Input Component", () => {
     expect(screen.getByText("USD")).toBeTruthy();
 
     const input = screen.getByRole("textbox");
-    expect(input).toHaveClass("pl-12", "pr-12");
+    expect(input).toHaveClass("pl-10", "pr-10");
   });
 
   it("should apply custom className", () => {
@@ -148,16 +148,12 @@ describe("Input Component", () => {
     const input = screen.getByRole("textbox");
     expect(input).toHaveClass(
       "w-full",
-      "px-4",
-      "py-3",
+      "px-3",
+      "py-2.5",
       "border",
       "bg-white",
       "border-gray-300",
       "rounded-lg",
-      "focus:ring-2",
-      "focus:ring-blue-500",
-      "focus:border-blue-500",
-      "focus:ring-offset-2",
       "text-gray-900",
       "placeholder:text-gray-500",
       "transition-all",
@@ -169,7 +165,7 @@ describe("Input Component", () => {
     const { container } = render(<Input label="Test" error="Error" />);
 
     const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass("space-y-2");
+    expect(wrapper).toHaveClass("space-y-1.5");
   });
 
   it("should handle focus and blur events", async () => {

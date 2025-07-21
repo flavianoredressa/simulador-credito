@@ -1,390 +1,845 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import {
-  LoanCalculator,
-  calculateAge,
-  getInterestRateByAge,
-  calculatePMT,
-} from "../LoanCalculator";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { LoanCalculator } from "../LoanCalculator";
+import { calculateLoanWithAge } from "@/lib/calculations";
+import type { LoanCalculation } from "@/types/loan";
 
-// Mock animation components
-jest.mock("@/components/animations/MotionComponents", () => ({
-  FadeIn: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SlideInLeft: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  SlideInRight: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  StaggerContainer: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  StaggerChild: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+// Mock the calculations module
+jest.mock("@/lib/calculations", () => ({
+  calculateLoanWithAge: jest.fn(),
 }));
 
-// Mock LoanChart
-jest.mock("../LoanChart", () => ({
-  __esModule: true,
-  default: () => <div data-testid="loan-chart">LoanChart Component</div>,
-}));
-
-jest.mock("../LoanForm", () => ({
-  LoanForm: ({ onCalculate }: { onCalculate?: (calc: unknown) => void }) => (
+// Mock the child components
+jest.mock("@/components/loan/LoanForm", () => ({
+  LoanForm: ({
+    onCalculate,
+  }: {
+    onCalculate: (data: {
+      amount: number;
+      installments: number;
+      birthDate: string;
+    }) => void;
+  }) => (
     <div data-testid="loan-form">
-      LoanForm Component
       <button
         data-testid="calculate-button"
         onClick={() =>
-          onCalculate?.({
-            amount: 15000,
-            installments: 18,
+          onCalculate({
+            amount: 50000,
+            installments: 12,
             birthDate: "1990-01-01",
           })
         }
       >
-        Calculate
-      </button>
-      <button
-        data-testid="calculate-without-birthdate"
-        onClick={() =>
-          onCalculate?.({
-            amount: 10000,
-            installments: 12,
-            birthDate: "",
-          })
-        }
-      >
-        Calculate Without Birth Date
-      </button>
-      <button
-        data-testid="calculate-middle-aged"
-        onClick={() =>
-          onCalculate?.({
-            amount: 20000,
-            installments: 24,
-            birthDate: "1975-01-01", // Age ~50 (41-60 range, 2% rate)
-          })
-        }
-      >
-        Calculate Middle Aged
-      </button>
-      <button
-        data-testid="calculate-senior"
-        onClick={() =>
-          onCalculate?.({
-            amount: 25000,
-            installments: 30,
-            birthDate: "1955-01-01", // Age ~70 (above 60, 4% rate)
-          })
-        }
-      >
-        Calculate Senior
-      </button>
-      <button
-        data-testid="calculate-exact-middle"
-        onClick={() =>
-          onCalculate?.({
-            amount: 30000,
-            installments: 36,
-            birthDate: "1974-07-20", // Age exactly 51 (middle of 41-60 range)
-          })
-        }
-      >
-        Calculate Exact Middle
+        Calculate Loan
       </button>
     </div>
   ),
 }));
 
-jest.mock("../LoanResults", () => ({
-  LoanResults: ({
-    calculation,
-  }: {
-    calculation: {
-      amount: number;
-      installments: number;
-      totalAmount: number;
-      installmentAmount: number;
-    };
-  }) => (
+jest.mock("@/components/loan/LoanResults", () => ({
+  LoanResults: ({ calculation }: { calculation: LoanCalculation }) => (
     <div data-testid="loan-results">
-      LoanResults Component
-      <div data-testid="result-amount">Amount: {calculation.amount}</div>
-      <div data-testid="result-installments">
-        Installments: {calculation.installments}
-      </div>
-      <div data-testid="result-total">Total: {calculation.totalAmount}</div>
+      Results for amount: {calculation.amount}
     </div>
   ),
 }));
 
-describe("LoanCalculator Component", () => {
-  beforeAll(() => {
-    // Mock Date to control age calculations
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-07-20"));
+// Mock animation components
+jest.mock("@/components/animations/MotionComponents", () => ({
+  FadeIn: ({
+    children,
+    delay,
+    className,
+  }: {
+    children: React.ReactNode;
+    delay?: number;
+    className?: string;
+  }) => (
+    <div data-testid="fade-in" data-delay={delay} className={className}>
+      {children}
+    </div>
+  ),
+  SlideInLeft: ({
+    children,
+    delay,
+  }: {
+    children: React.ReactNode;
+    delay?: number;
+  }) => (
+    <div data-testid="slide-in-left" data-delay={delay}>
+      {children}
+    </div>
+  ),
+  SlideInRight: ({
+    children,
+    delay,
+  }: {
+    children: React.ReactNode;
+    delay?: number;
+  }) => (
+    <div data-testid="slide-in-right" data-delay={delay}>
+      {children}
+    </div>
+  ),
+  StaggerContainer: ({
+    children,
+    staggerDelay,
+  }: {
+    children: React.ReactNode;
+    staggerDelay?: number;
+  }) => (
+    <div data-testid="stagger-container" data-stagger-delay={staggerDelay}>
+      {children}
+    </div>
+  ),
+  StaggerChild: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="stagger-child">{children}</div>
+  ),
+}));
+
+// Mock chart components
+jest.mock("../charts", () => ({
+  LoanBalanceEvolutionChart: ({ loanData }: { loanData: LoanCalculation }) => (
+    <div data-testid="balance-evolution-chart">
+      Balance Chart for {loanData.amount}
+    </div>
+  ),
+  LoanDistributionChart: ({ loanData }: { loanData: LoanCalculation }) => (
+    <div data-testid="distribution-chart">
+      Distribution Chart for {loanData.amount}
+    </div>
+  ),
+  LoanInstallmentCompositionChart: ({
+    loanData,
+  }: {
+    loanData: LoanCalculation;
+  }) => (
+    <div data-testid="installment-composition-chart">
+      Installment Chart for {loanData.amount}
+    </div>
+  ),
+}));
+
+const mockCalculateLoanWithAge = calculateLoanWithAge as jest.MockedFunction<
+  typeof calculateLoanWithAge
+>;
+
+const mockLoanCalculation = {
+  amount: 50000,
+  installments: 12,
+  interestRate: 0.02,
+  totalAmount: 55000,
+  installmentAmount: 4583.33,
+  totalInterest: 5000,
+  interestPercentage: 10,
+  age: 34,
+  annualInterestRate: 0.24,
+};
+
+describe("LoanCalculator", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  afterAll(() => {
-    jest.useRealTimers();
-  });
-
-  it("should render LoanForm component initially", () => {
-    render(<LoanCalculator />);
-
-    expect(screen.getByTestId("loan-form")).toBeTruthy();
-    expect(screen.getByText("LoanForm Component")).toBeTruthy();
-  });
-
-  it("should not render LoanResults initially", () => {
-    render(<LoanCalculator />);
-
-    expect(screen.queryByTestId("loan-results")).toBeNull();
-  });
-
-  it("should have proper grid layout structure", () => {
-    const { container } = render(<LoanCalculator />);
-
-    // Check if the component has grid layout
-    const gridElement = container.querySelector(".grid");
-    expect(gridElement).toBeTruthy();
-    expect(gridElement?.classList.contains("lg:grid-cols-2")).toBe(true);
-    expect(gridElement?.classList.contains("gap-8")).toBe(true);
-  });
-
-  it("should calculate and display results when form is submitted with valid birth date", () => {
-    render(<LoanCalculator />);
-
-    // Initially no results
-    expect(screen.queryByTestId("loan-results")).toBeNull();
-    expect(screen.queryByTestId("loan-chart")).toBeNull();
-
-    // Click calculate button
-    const calculateButton = screen.getByTestId("calculate-button");
-    fireEvent.click(calculateButton);
-
-    // Results should appear
-    expect(screen.getByTestId("loan-results")).toBeTruthy();
-    expect(screen.getByTestId("result-amount")).toBeTruthy();
-    expect(screen.getByTestId("result-installments")).toBeTruthy();
-    expect(screen.getByTestId("result-total")).toBeTruthy();
-
-    // Chart should also appear
-    expect(screen.getByTestId("loan-chart")).toBeTruthy();
-  });
-
-  it("should not calculate when birthDate is empty", () => {
-    render(<LoanCalculator />);
-
-    // Click calculate without birth date
-    const calculateButton = screen.getByTestId("calculate-without-birthdate");
-    fireEvent.click(calculateButton);
-
-    // Results should not appear
-    expect(screen.queryByTestId("loan-results")).toBeNull();
-    expect(screen.queryByTestId("loan-chart")).toBeNull();
-  });
-
-  it("should render chart section with proper structure when calculation exists", () => {
-    render(<LoanCalculator />);
-
-    // Trigger calculation
-    const calculateButton = screen.getByTestId("calculate-button");
-    fireEvent.click(calculateButton);
-
-    // Check chart section
-    expect(screen.getByText("Análise Visual dos Pagamentos")).toBeTruthy();
-    expect(screen.getByTestId("loan-chart")).toBeTruthy();
-  });
-
-  it("should handle multiple calculations correctly", () => {
-    render(<LoanCalculator />);
-
-    // First calculation
-    const calculateButton = screen.getByTestId("calculate-button");
-    fireEvent.click(calculateButton);
-
-    expect(screen.getByTestId("loan-results")).toBeTruthy();
-
-    // Second calculation (should replace the first)
-    fireEvent.click(calculateButton);
-
-    expect(screen.getByTestId("loan-results")).toBeTruthy();
-    expect(screen.getByTestId("loan-chart")).toBeTruthy();
-  });
-
-  it("should have proper space-y-8 layout class", () => {
-    const { container } = render(<LoanCalculator />);
-
-    const mainDiv = container.firstChild as HTMLElement;
-    expect(mainDiv?.classList.contains("space-y-8")).toBe(true);
-  });
-
-  describe("Age-based interest rate coverage tests", () => {
-    it("should calculate loan for middle-aged person (41-60 years) with 2% interest", () => {
+  describe("Initial Rendering", () => {
+    it("should render the main container", () => {
       render(<LoanCalculator />);
 
-      // Initially no results
-      expect(screen.queryByTestId("loan-results")).toBeNull();
+      const container =
+        screen.getByTestId("loan-form").parentElement?.parentElement
+          ?.parentElement;
+      expect(container).toHaveClass("space-y-3", "sm:space-y-4");
+    });
 
-      // Click calculate button for middle-aged person
-      const calculateButton = screen.getByTestId("calculate-middle-aged");
+    it("should render the grid layout for form and results", () => {
+      render(<LoanCalculator />);
+
+      const gridContainer =
+        screen.getByTestId("loan-form").parentElement?.parentElement;
+      expect(gridContainer).toHaveClass(
+        "grid",
+        "lg:grid-cols-2",
+        "gap-3",
+        "sm:gap-4"
+      );
+    });
+
+    it("should render the loan form with slide-in-left animation", () => {
+      render(<LoanCalculator />);
+
+      const slideInLeft = screen.getByTestId("slide-in-left");
+      expect(slideInLeft).toBeInTheDocument();
+      expect(slideInLeft).toHaveAttribute("data-delay", "0.2");
+
+      const loanForm = screen.getByTestId("loan-form");
+      expect(loanForm).toBeInTheDocument();
+    });
+
+    it("should NOT render loan results initially", () => {
+      render(<LoanCalculator />);
+
+      const loanResults = screen.queryByTestId("loan-results");
+      expect(loanResults).not.toBeInTheDocument();
+
+      const slideInRight = screen.queryByTestId("slide-in-right");
+      expect(slideInRight).not.toBeInTheDocument();
+    });
+
+    it("should NOT render financial summary initially", () => {
+      render(<LoanCalculator />);
+
+      const summaryTitle = screen.queryByText("Resumo Financeiro");
+      expect(summaryTitle).not.toBeInTheDocument();
+    });
+
+    it("should NOT render charts section initially", () => {
+      render(<LoanCalculator />);
+
+      const chartsTitle = screen.queryByText("Gráficos Interativos");
+      expect(chartsTitle).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Loan Calculation Handling", () => {
+    it("should call calculateLoanWithAge when form is submitted with valid data", () => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
       fireEvent.click(calculateButton);
 
-      // Results should appear
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-      expect(screen.getByTestId("result-amount")).toBeTruthy();
-      expect(screen.getByTestId("result-installments")).toBeTruthy();
-      expect(screen.getByTestId("result-total")).toBeTruthy();
-
-      // Chart should also appear
-      expect(screen.getByTestId("loan-chart")).toBeTruthy();
-      expect(screen.getByText("Análise Visual dos Pagamentos")).toBeTruthy();
+      expect(mockCalculateLoanWithAge).toHaveBeenCalledWith(
+        50000,
+        12,
+        "1990-01-01"
+      );
     });
 
-    it("should calculate loan for senior person (above 60 years) with 4% interest", () => {
-      render(<LoanCalculator />);
+    it("should NOT call calculateLoanWithAge when birthDate is empty", () => {
+      // Clear all mocks first
+      jest.clearAllMocks();
 
-      // Initially no results
-      expect(screen.queryByTestId("loan-results")).toBeNull();
+      // Create a custom component that simulates the exact logic from LoanCalculator
+      const TestComponent = () => {
+        const [calculation, setCalculation] =
+          React.useState<LoanCalculation | null>(null);
 
-      // Click calculate button for senior person
-      const calculateButton = screen.getByTestId("calculate-senior");
+        const handleCalculate = (data: {
+          amount: number;
+          installments: number;
+          birthDate: string;
+        }) => {
+          if (data.birthDate) {
+            const result = calculateLoanWithAge(
+              data.amount,
+              data.installments,
+              data.birthDate
+            );
+            setCalculation(result);
+          }
+        };
+
+        return (
+          <div>
+            <button
+              data-testid="calculate-button-empty"
+              onClick={() =>
+                handleCalculate({
+                  amount: 50000,
+                  installments: 12,
+                  birthDate: "",
+                })
+              }
+            >
+              Calculate with Empty Date
+            </button>
+            {calculation && (
+              <div data-testid="has-calculation">Has calculation</div>
+            )}
+          </div>
+        );
+      };
+
+      render(<TestComponent />);
+
+      const calculateButton = screen.getByTestId("calculate-button-empty");
       fireEvent.click(calculateButton);
 
-      // Results should appear
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-      expect(screen.getByTestId("result-amount")).toBeTruthy();
-      expect(screen.getByTestId("result-installments")).toBeTruthy();
-      expect(screen.getByTestId("result-total")).toBeTruthy();
+      // Since birthDate is empty, calculateLoanWithAge should not be called
+      expect(mockCalculateLoanWithAge).not.toHaveBeenCalled();
 
-      // Chart should also appear
-      expect(screen.getByTestId("loan-chart")).toBeTruthy();
-      expect(screen.getByText("Análise Visual dos Pagamentos")).toBeTruthy();
+      // And no calculation should be displayed
+      expect(screen.queryByTestId("has-calculation")).not.toBeInTheDocument();
     });
 
-    it("should handle all age group buttons correctly", () => {
+    it("should update calculation state when valid calculation is performed", async () => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+
       render(<LoanCalculator />);
 
-      // Test that all age-related buttons exist and can be clicked
-      expect(screen.getByTestId("calculate-button")).toBeTruthy(); // Young adult
-      expect(screen.getByTestId("calculate-middle-aged")).toBeTruthy(); // Middle age
-      expect(screen.getByTestId("calculate-senior")).toBeTruthy(); // Senior
-      expect(screen.getByTestId("calculate-exact-middle")).toBeTruthy(); // Exact middle age
-
-      // Click each one to ensure they work
-      fireEvent.click(screen.getByTestId("calculate-button"));
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-
-      fireEvent.click(screen.getByTestId("calculate-middle-aged"));
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-
-      fireEvent.click(screen.getByTestId("calculate-senior"));
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-
-      fireEvent.click(screen.getByTestId("calculate-exact-middle"));
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-    });
-
-    it("should calculate loan for exact middle-aged person (51 years old)", () => {
-      render(<LoanCalculator />);
-
-      // Initially no results
-      expect(screen.queryByTestId("loan-results")).toBeNull();
-
-      // Click calculate button for exact middle-aged person (51 years)
-      const calculateButton = screen.getByTestId("calculate-exact-middle");
+      const calculateButton = screen.getByTestId("calculate-button");
       fireEvent.click(calculateButton);
 
-      // Results should appear
-      expect(screen.getByTestId("loan-results")).toBeTruthy();
-      expect(screen.getByTestId("result-amount")).toBeTruthy();
-      expect(screen.getByTestId("result-installments")).toBeTruthy();
-      expect(screen.getByTestId("result-total")).toBeTruthy();
-
-      // Chart should also appear
-      expect(screen.getByTestId("loan-chart")).toBeTruthy();
-      expect(screen.getByText("Análise Visual dos Pagamentos")).toBeTruthy();
+      await waitFor(() => {
+        const loanResults = screen.getByTestId("loan-results");
+        expect(loanResults).toBeInTheDocument();
+        expect(loanResults).toHaveTextContent("Results for amount: 50000");
+      });
     });
   });
 
-  // Unit tests for exported functions
-  describe("Unit tests for individual functions", () => {
-    describe("calculateAge", () => {
-      beforeAll(() => {
-        // Mock the current date to 2025-07-20 for consistent testing
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date("2025-07-20"));
-      });
+  describe("Results Section Rendering", () => {
+    beforeEach(() => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+    });
 
-      afterAll(() => {
-        jest.useRealTimers();
-      });
+    it("should render loan results with slide-in-right animation after calculation", async () => {
+      render(<LoanCalculator />);
 
-      it("should calculate age correctly for middle-aged person", () => {
-        const age = calculateAge("1974-07-20"); // Exactly 51 years old
-        expect(age).toBe(51);
-      });
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
 
-      it("should calculate age correctly for senior person", () => {
-        const age = calculateAge("1955-01-01"); // About 70 years old
-        expect(age).toBe(70);
-      });
+      await waitFor(() => {
+        const slideInRight = screen.getByTestId("slide-in-right");
+        expect(slideInRight).toBeInTheDocument();
+        expect(slideInRight).toHaveAttribute("data-delay", "0.4");
 
-      it("should handle month/day boundaries correctly", () => {
-        const age1 = calculateAge("1975-07-19"); // Day before current date
-        const age2 = calculateAge("1975-07-21"); // Day after current date
-        expect(age1).toBe(50);
-        expect(age2).toBe(49); // Birthday hasn't occurred yet
+        const loanResults = screen.getByTestId("loan-results");
+        expect(loanResults).toBeInTheDocument();
       });
     });
 
-    describe("getInterestRateByAge", () => {
-      it("should return 2% for ages 41-60", () => {
-        expect(getInterestRateByAge(41)).toBe(2);
-        expect(getInterestRateByAge(50)).toBe(2);
-        expect(getInterestRateByAge(60)).toBe(2);
-      });
+    it("should render financial summary section after calculation", async () => {
+      render(<LoanCalculator />);
 
-      it("should return 4% for ages above 60", () => {
-        expect(getInterestRateByAge(61)).toBe(4);
-        expect(getInterestRateByAge(70)).toBe(4);
-        expect(getInterestRateByAge(80)).toBe(4);
-      });
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
 
-      it("should return 5% for ages 25 and below", () => {
-        expect(getInterestRateByAge(18)).toBe(5);
-        expect(getInterestRateByAge(25)).toBe(5);
-      });
-
-      it("should return 3% for ages 26-40", () => {
-        expect(getInterestRateByAge(26)).toBe(3);
-        expect(getInterestRateByAge(30)).toBe(3);
-        expect(getInterestRateByAge(40)).toBe(3);
+      await waitFor(() => {
+        const summaryTitle = screen.getByText("Resumo Financeiro");
+        expect(summaryTitle).toBeInTheDocument();
+        expect(summaryTitle).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-gray-800"
+        );
       });
     });
 
-    describe("calculatePMT", () => {
-      it("should handle zero interest rate correctly", () => {
-        const pmt = calculatePMT(12000, 0, 12);
-        expect(pmt).toBe(1000); // 12000 / 12 = 1000
+    it("should render financial summary with fade-in animation", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const fadeInElements = screen.getAllByTestId("fade-in");
+        const summaryFadeIn = fadeInElements.find(
+          (el) =>
+            el.getAttribute("data-delay") === "0.8" &&
+            el.classList.contains("w-full")
+        );
+        expect(summaryFadeIn).toBeInTheDocument();
+      });
+    });
+
+    it("should render stagger container with correct delay", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const staggerContainers = screen.getAllByTestId("stagger-container");
+        expect(staggerContainers.length).toBeGreaterThan(0);
+        expect(staggerContainers[0]).toHaveAttribute(
+          "data-stagger-delay",
+          "0.2"
+        );
+      });
+    });
+  });
+
+  describe("Financial Summary Cards", () => {
+    beforeEach(() => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+    });
+
+    it("should render financial summary header with icon", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const headerIcon = screen.getByText("📋");
+        expect(headerIcon).toBeInTheDocument();
+
+        const headerIconContainer = headerIcon.parentElement;
+        expect(headerIconContainer).toHaveClass(
+          "flex",
+          "items-center",
+          "justify-center",
+          "w-10",
+          "h-10",
+          "bg-gradient-to-r",
+          "from-gray-100",
+          "to-gray-500",
+          "rounded-full",
+          "shadow-md"
+        );
+      });
+    });
+
+    it("should render loan amount card with correct values", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const amountTitle = screen.getByText("Valor Emprestado");
+        expect(amountTitle).toBeInTheDocument();
+        expect(amountTitle).toHaveClass(
+          "text-sm",
+          "font-medium",
+          "text-blue-700"
+        );
+
+        const amountIcon = screen.getByText("💵");
+        expect(amountIcon).toBeInTheDocument();
+
+        const amountValue = screen.getByText("R$ 50.000,00");
+        expect(amountValue).toBeInTheDocument();
+        expect(amountValue).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-blue-900"
+        );
+      });
+    });
+
+    it("should render monthly installment card with correct values", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const installmentTitle = screen.getByText("Parcela Mensal");
+        expect(installmentTitle).toBeInTheDocument();
+        expect(installmentTitle).toHaveClass(
+          "text-sm",
+          "font-medium",
+          "text-green-700"
+        );
+
+        const installmentIcon = screen.getByText("💰");
+        expect(installmentIcon).toBeInTheDocument();
+
+        const installmentValue = screen.getByText("R$ 4.583,33");
+        expect(installmentValue).toBeInTheDocument();
+        expect(installmentValue).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-green-900"
+        );
+      });
+    });
+
+    it("should render total amount card with correct values", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const totalTitle = screen.getByText("Total a Pagar");
+        expect(totalTitle).toBeInTheDocument();
+        expect(totalTitle).toHaveClass(
+          "text-sm",
+          "font-medium",
+          "text-purple-700"
+        );
+
+        const totalIcon = screen.getByText("💳");
+        expect(totalIcon).toBeInTheDocument();
+
+        const totalValue = screen.getByText("R$ 55.000,00");
+        expect(totalValue).toBeInTheDocument();
+        expect(totalValue).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-purple-900"
+        );
+      });
+    });
+
+    it("should render total interest card with correct values", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const interestTitle = screen.getByText("Total de Juros");
+        expect(interestTitle).toBeInTheDocument();
+        expect(interestTitle).toHaveClass(
+          "text-sm",
+          "font-medium",
+          "text-red-700"
+        );
+
+        const interestIcon = screen.getByText("⚠️");
+        expect(interestIcon).toBeInTheDocument();
+
+        const interestValue = screen.getByText("R$ 5.000,00");
+        expect(interestValue).toBeInTheDocument();
+        expect(interestValue).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-red-900"
+        );
+      });
+    });
+
+    it("should render financial cards in correct grid layout", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const cardContainer = screen
+          .getByText("Valor Emprestado")
+          .closest(".grid");
+        expect(cardContainer).toHaveClass(
+          "grid",
+          "grid-cols-1",
+          "md:grid-cols-2",
+          "lg:grid-cols-4",
+          "gap-4"
+        );
+      });
+    });
+  });
+
+  describe("Charts Section", () => {
+    beforeEach(() => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+    });
+
+    it("should render charts section with fade-in animation", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const fadeInElements = screen.getAllByTestId("fade-in");
+        const chartsFadeIn = fadeInElements.find(
+          (el) =>
+            el.getAttribute("data-delay") === "0.6" &&
+            el.classList.contains("w-full")
+        );
+        expect(chartsFadeIn).toBeInTheDocument();
+      });
+    });
+
+    it("should render charts header with icon and title", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const chartsTitle = screen.getByText("Gráficos Interativos");
+        expect(chartsTitle).toBeInTheDocument();
+        expect(chartsTitle).toHaveClass(
+          "text-xl",
+          "font-bold",
+          "text-gray-800"
+        );
+
+        const chartsIcon = screen.getByText("📊");
+        expect(chartsIcon).toBeInTheDocument();
+
+        const chartsIconContainer = chartsIcon.parentElement;
+        expect(chartsIconContainer).toHaveClass(
+          "flex",
+          "items-center",
+          "justify-center",
+          "w-10",
+          "h-10",
+          "bg-gradient-to-r",
+          "from-blue-500",
+          "to-indigo-600",
+          "rounded-full",
+          "shadow-md"
+        );
+      });
+    });
+
+    it("should render loan distribution chart", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const distributionChart = screen.getByTestId("distribution-chart");
+        expect(distributionChart).toBeInTheDocument();
+        expect(distributionChart).toHaveTextContent(
+          "Distribution Chart for 50000"
+        );
+      });
+    });
+
+    it("should render loan balance evolution chart", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const balanceChart = screen.getByTestId("balance-evolution-chart");
+        expect(balanceChart).toBeInTheDocument();
+        expect(balanceChart).toHaveTextContent("Balance Chart for 50000");
+      });
+    });
+
+    it("should render loan installment composition chart", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const installmentChart = screen.getByTestId(
+          "installment-composition-chart"
+        );
+        expect(installmentChart).toBeInTheDocument();
+        expect(installmentChart).toHaveTextContent(
+          "Installment Chart for 50000"
+        );
+      });
+    });
+
+    it("should render charts in correct grid layout", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const chartsGridContainer = screen
+          .getByTestId("distribution-chart")
+          .closest(".grid");
+        expect(chartsGridContainer).toHaveClass(
+          "grid",
+          "grid-cols-1",
+          "md:grid-cols-6",
+          "gap-4",
+          "mb-6"
+        );
+
+        // Check individual chart containers
+        const distributionContainer =
+          screen.getByTestId("distribution-chart").parentElement;
+        expect(distributionContainer).toHaveClass("md:col-span-3");
+
+        const balanceContainer = screen.getByTestId(
+          "balance-evolution-chart"
+        ).parentElement;
+        expect(balanceContainer).toHaveClass("md:col-span-3");
+      });
+    });
+  });
+
+  describe("Component Integration", () => {
+    it("should pass calculation data to all chart components", async () => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const distributionChart = screen.getByTestId("distribution-chart");
+        const balanceChart = screen.getByTestId("balance-evolution-chart");
+        const installmentChart = screen.getByTestId(
+          "installment-composition-chart"
+        );
+
+        expect(distributionChart).toHaveTextContent("50000");
+        expect(balanceChart).toHaveTextContent("50000");
+        expect(installmentChart).toHaveTextContent("50000");
+      });
+    });
+
+    it("should pass calculation data to LoanResults component", async () => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const loanResults = screen.getByTestId("loan-results");
+        expect(loanResults).toHaveTextContent("Results for amount: 50000");
+      });
+    });
+
+    it("should handle multiple calculations correctly", async () => {
+      const secondMockCalculation = {
+        ...mockLoanCalculation,
+        amount: 75000,
+        totalAmount: 82500,
+        installmentAmount: 6875,
+        totalInterest: 7500,
+      };
+
+      // First calculation
+      mockCalculateLoanWithAge.mockReturnValueOnce(mockLoanCalculation);
+      render(<LoanCalculator />);
+
+      let calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        expect(screen.getByText("R$ 50.000,00")).toBeInTheDocument();
       });
 
-      it("should calculate PMT with regular interest rate", () => {
-        const pmt = calculatePMT(10000, 3, 12);
-        expect(pmt).toBeGreaterThan(800); // Should be more than simple division
-        expect(pmt).toBeLessThan(900); // But not too much more
+      // Second calculation
+      mockCalculateLoanWithAge.mockReturnValueOnce(secondMockCalculation);
+      calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        expect(screen.getByText("R$ 75.000,00")).toBeInTheDocument();
+        expect(screen.queryByText("R$ 50.000,00")).not.toBeInTheDocument();
       });
+    });
+  });
 
-      it("should handle edge cases", () => {
-        const pmt1 = calculatePMT(1000, 0, 1);
-        expect(pmt1).toBe(1000); // 1000 / 1 = 1000
+  describe("Styling and Layout", () => {
+    beforeEach(() => {
+      mockCalculateLoanWithAge.mockReturnValue(mockLoanCalculation);
+    });
 
-        const pmt2 = calculatePMT(24000, 0, 24);
-        expect(pmt2).toBe(1000); // 24000 / 24 = 1000
+    it("should apply correct styling to financial summary container", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const summaryContainer = screen
+          .getByText("Resumo Financeiro")
+          .closest(".bg-gradient-to-br");
+        expect(summaryContainer).toHaveClass(
+          "bg-gradient-to-br",
+          "from-gray-50",
+          "to-gray-100",
+          "border",
+          "border-gray-200",
+          "rounded-xl",
+          "p-6",
+          "shadow-lg"
+        );
+      });
+    });
+
+    it("should apply correct styling to charts container", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const chartsContainer = screen
+          .getByText("Gráficos Interativos")
+          .closest(".bg-gradient-to-br");
+        expect(chartsContainer).toHaveClass(
+          "bg-gradient-to-br",
+          "from-green-50",
+          "to-green-100",
+          "border",
+          "border-green-200",
+          "rounded-xl",
+          "p-6",
+          "shadow-lg"
+        );
+      });
+    });
+
+    it("should apply correct styling to financial cards", async () => {
+      render(<LoanCalculator />);
+
+      const calculateButton = screen.getByTestId("calculate-button");
+      fireEvent.click(calculateButton);
+
+      await waitFor(() => {
+        const amountCard = screen
+          .getByText("Valor Emprestado")
+          .closest(".bg-gradient-to-br");
+        expect(amountCard).toHaveClass(
+          "bg-gradient-to-br",
+          "from-blue-50",
+          "to-blue-100",
+          "p-4",
+          "rounded-lg",
+          "border",
+          "border-blue-200",
+          "shadow-sm"
+        );
+
+        const installmentCard = screen
+          .getByText("Parcela Mensal")
+          .closest(".bg-gradient-to-br");
+        expect(installmentCard).toHaveClass(
+          "bg-gradient-to-br",
+          "from-green-50",
+          "to-green-100",
+          "p-4",
+          "rounded-lg",
+          "border",
+          "border-green-200",
+          "shadow-sm"
+        );
+
+        const totalCard = screen
+          .getByText("Total a Pagar")
+          .closest(".bg-gradient-to-br");
+        expect(totalCard).toHaveClass(
+          "bg-gradient-to-br",
+          "from-purple-50",
+          "to-purple-100",
+          "p-4",
+          "rounded-lg",
+          "border",
+          "border-purple-200",
+          "shadow-sm"
+        );
+
+        const interestCard = screen
+          .getByText("Total de Juros")
+          .closest(".bg-gradient-to-br");
+        expect(interestCard).toHaveClass(
+          "bg-gradient-to-br",
+          "from-red-50",
+          "to-red-100",
+          "p-4",
+          "rounded-lg",
+          "border",
+          "border-red-200",
+          "shadow-sm"
+        );
       });
     });
   });

@@ -22,30 +22,32 @@ describe("Footer Component", () => {
     render(<Footer />);
 
     const footer = screen.getByRole("contentinfo");
-    expect(footer).toBeTruthy();
+    expect(footer).toBeInTheDocument();
   });
 
   it("should render the main heading", () => {
     render(<Footer />);
 
-    expect(screen.getByText("Simulador de Empréstimo")).toBeTruthy();
+    expect(screen.getByText("Simulador de Empréstimo")).toBeInTheDocument();
   });
 
   it("should render the copyright notice", () => {
     render(<Footer />);
 
     const currentYear = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(`© ${currentYear}`))).toBeTruthy();
+    expect(
+      screen.getByText(new RegExp(`© ${currentYear}`))
+    ).toBeInTheDocument();
   });
 
   it("should render resource features list", () => {
     render(<Footer />);
 
-    expect(screen.getByText("Recursos")).toBeTruthy();
-    expect(screen.getByText("✓ Cálculo preciso de juros")).toBeTruthy();
-    expect(screen.getByText("✓ Resultados instantâneos")).toBeTruthy();
-    expect(screen.getByText("✓ 100% gratuito")).toBeTruthy();
-    expect(screen.getByText("✓ Sem cadastro necessário")).toBeTruthy();
+    expect(screen.getByText("Recursos")).toBeInTheDocument();
+    expect(screen.getByText("✓ Cálculo preciso de juros")).toBeInTheDocument();
+    expect(screen.getByText("✓ Resultados instantâneos")).toBeInTheDocument();
+    expect(screen.getByText("✓ 100% gratuito")).toBeInTheDocument();
+    expect(screen.getByText("✓ Sem cadastro necessário")).toBeInTheDocument();
   });
 
   it("should render important information section", () => {
@@ -112,14 +114,14 @@ describe("Footer Component", () => {
   it("should have proper spacing and padding", () => {
     const { container } = render(<Footer />);
 
-    const innerContainer = container.querySelector(".py-8");
+    const innerContainer = container.querySelector(".py-4");
     expect(innerContainer).toBeTruthy();
   });
 
   it("should render divider between sections", () => {
     const { container } = render(<Footer />);
 
-    const divider = container.querySelector(".border-t.border-gray-200.mt-8");
+    const divider = container.querySelector(".border-t.border-gray-200.mt-4");
     expect(divider).toBeTruthy();
   });
 
@@ -158,7 +160,7 @@ describe("Footer Component", () => {
 
     const mainHeading = container.querySelector("h3");
     expect(mainHeading).toHaveClass(
-      "text-lg",
+      "text-base",
       "font-semibold",
       "text-gray-900"
     );

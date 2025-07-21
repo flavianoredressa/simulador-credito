@@ -7,21 +7,21 @@ describe("Button Component", () => {
 
     const button = screen.getByRole("button", { name: "Click me" });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveClass("bg-blue-600", "px-4", "py-3"); // primary variant, md size
+    expect(button).toHaveClass("bg-[#8EDB00]", "px-4", "py-3"); // primary variant, md size
   });
 
   it("should render different variants", () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-blue-600");
+    expect(screen.getByRole("button")).toHaveClass("bg-[#8EDB00]");
 
     rerender(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("bg-gray-600");
+    expect(screen.getByRole("button")).toHaveClass("bg-[#50504F]");
 
     rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole("button")).toHaveClass("border-blue-600");
+    expect(screen.getByRole("button")).toHaveClass("border-[#8EDB00]");
 
     rerender(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole("button")).toHaveClass("text-blue-600");
+    expect(screen.getByRole("button")).toHaveClass("text-[#8EDB00]");
   });
 
   it("should render different sizes", () => {
@@ -104,7 +104,7 @@ describe("Button Component", () => {
 
     const button = screen.getByRole("button");
     expect(button).toHaveClass(
-      "hover:bg-blue-700",
+      "hover:bg-[#76B800]",
       "transform",
       "hover:scale-105"
     );
