@@ -247,9 +247,43 @@ npm run test:watch
 # Com relatório de cobertura
 npm run test:coverage
 
+# Verificação de cobertura (95% mínimo)
+npm run check-coverage
+
+# Pipeline completo antes do deploy
+npm run pre-deploy
+
 # Testes específicos
 npm test -- --testNamePattern="LoanCalculator"
-````
+```
+
+### 📊 Cobertura de Testes (95% Mínimo)
+
+O projeto **exige cobertura mínima de 95%** em todas as métricas antes do deploy:
+
+```bash
+npm run check-coverage
+```
+
+```
+🔍 Checking test coverage...
+
+📊 Coverage Report:
+┌─────────────┬─────────┬────────┐
+│ Metric      │ Current │ Status │
+├─────────────┼─────────┼────────┤
+│ lines       │ 99.6%   │ ✅ Pass │
+│ functions   │ 100%    │ ✅ Pass │
+│ branches    │ 97%     │ ✅ Pass │
+│ statements  │ 99.66%  │ ✅ Pass │
+└─────────────┴─────────┴────────┘
+
+🎯 Minimum Required: 95%
+📈 Overall Status: ✅ PASSED
+🎉 All coverage thresholds met! Ready to deploy 🚀
+```
+
+**⚠️ Deploy Bloqueado**: Se a cobertura estiver abaixo de 95%, o deploy será **automaticamente cancelado** no GitHub Actions.`
 
 ### Cobertura de Testes
 
@@ -300,10 +334,12 @@ npm start       # Servidor de produção
 ### Qualidade de Código
 
 ```bash
-npm run lint    # ESLint para análise estática
-npm test        # Jest + Testing Library
-npm run test:watch    # Testes em modo watch
-npm run test:coverage # Cobertura de testes
+npm run lint              # ESLint para análise estática
+npm test                  # Jest + Testing Library
+npm run test:watch        # Testes em modo watch
+npm run test:coverage     # Cobertura de testes
+npm run check-coverage    # Verifica cobertura ≥ 95%
+npm run pre-deploy        # Pipeline completo (testes + cobertura)
 ```
 
 ## � Funcionalidades do Simulador
@@ -572,13 +608,17 @@ O projeto inclui workflows automatizados para CI/CD:
 #### **Deploy de Produção** (`.github/workflows/firebase-hosting-merge.yml`)
 
 - **Trigger**: Push para branch `develop`
-- **Ações**: Build + Deploy para Firebase Hosting (live)
+- **Pré-requisitos**: ✅ Cobertura de testes ≥ 95%
+- **Ações**: Test Coverage → Build → Deploy para Firebase Hosting (live)
 - **URL**: https://simulador-credito.web.app
+- **❌ Bloqueio**: Deploy cancelado se cobertura < 95%
 
 #### **Preview de Pull Request** (`.github/workflows/firebase-hosting-pull-request.yml`)
 
 - **Trigger**: Abertura/atualização de PR
-- **Ações**: Build + Deploy para canal preview
+- **Pré-requisitos**: ✅ Cobertura de testes ≥ 95%
+- **Ações**: Test Coverage → Build → Deploy para canal preview
+- **Comentário**: Relatório de cobertura automático no PR
 - **URL**: URL temporária gerada automaticamente
 
 #### **Secrets Configurados**
@@ -731,6 +771,7 @@ chore: atualização de build, dependências
 ### Checklist para Pull Request
 
 - [ ] ✅ Testes passando (`npm test`)
+- [ ] ✅ Cobertura ≥ 95% (`npm run check-coverage`)
 - [ ] ✅ TypeScript sem erros (`npm run build`)
 - [ ] ✅ ESLint sem warnings (`npm run lint`)
 - [ ] ✅ Código documentado
