@@ -239,8 +239,8 @@ describe("Header", () => {
       render(<Header />);
 
       expect(
-        screen.getByRole("button", { name: /simular empréstimo/i })
-      ).toBeInTheDocument();
+        screen.queryByRole("button", { name: /simular empréstimo/i })
+      ).not.toBeInTheDocument();
     });
   });
 
