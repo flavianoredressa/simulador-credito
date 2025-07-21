@@ -20,7 +20,15 @@ const config: Config = {
     "!src/**/index.{js,ts}",
     "!src/components/loan/charts/**",
   ],
-  coverageReporters: ["text", "lcov", "html"],
+  coverageReporters: ["text", "lcov", "html", "json-summary"],
+  coverageThreshold: {
+    global: {
+      branches: 95,
+      functions: 95,
+      lines: 95,
+      statements: 95,
+    },
+  },
   testMatch: [
     "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
     "<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}",
